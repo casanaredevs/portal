@@ -13,6 +13,7 @@ export interface SocialNetwork {
 
 
 export enum SocialNetworks {
+    GITHUB = 'github',
     FACEBOOK = 'facebook',
     INSTAGRAM = 'instagram',
     LINKED_IN = 'linked_in',

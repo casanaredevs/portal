@@ -46,6 +46,7 @@ export class AppComponent {
       { name: 'telegram', location: '/assets/icons/social/telegram.svg' },
       { name: 'twitter', location: '/assets/icons/social/twitter.svg' },
       { name: 'whatsapp', location: '/assets/icons/social/whatsapp.svg' },
+      { name: 'github', location: '/assets/icons/social/github.svg' },
     ]
 
     for (let i = 0; i < iconsList.length; i++) {
