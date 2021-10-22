@@ -32,10 +32,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit (): void {
     this.divAvatar.forEach((_elementRef, index) => {
-      let clientWidth = this.divAvatar.get(index)?.nativeElement.clientWidth
-
       timer(100).subscribe({
         next: () => {
+          let clientWidth = this.divAvatar.get(index)?.nativeElement.clientWidth
           this.renderer.setStyle(this.divAvatar.get(index)?.nativeElement, 'height', clientWidth + 'px')
         }
       })
