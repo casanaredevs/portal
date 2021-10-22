@@ -38,6 +38,7 @@
                 *ngFor="let _social of _dev.socialNetworks"
                 mat-icon-button
                 [href]="_social.url"
+                [matTooltip]="_social.name | titlecase"
                 target="_blank"
               >
                 <mat-icon [svgIcon]="_social.name"></mat-icon>

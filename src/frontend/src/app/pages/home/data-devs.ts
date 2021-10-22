@@ -8,6 +8,10 @@ export const developerList: Developer[] = [
         description: 'Desarrollador de Apps',
         socialNetworks: [
             {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/aldairguarupe'
+            },
+            {
                 name: SocialNetworks.LINKED_IN,
                 url: '//linkedin.com/in/aldairguarupe/'
             },
