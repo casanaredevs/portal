@@ -27,7 +27,7 @@ export const developerList: Developer[] = [
     },
     {
         name: 'Juan David',
-        lastName: 'Pareja Soto',
+        lastName: 'Pareja Soto.',
         imageUrl: 'https://avatars.githubusercontent.com/u/3516716',
         description: 'Desarrollador de Software',
         socialNetworks: [
