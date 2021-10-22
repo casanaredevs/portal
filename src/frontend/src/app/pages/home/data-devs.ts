@@ -24,6 +24,34 @@ export const developerList: Developer[] = [
                 url: '//t.me/aldairguarupe'
             },
         ]
+    },
+    {
+        name: 'Juan David',
+        lastName: 'Pareja Soto',
+        imageUrl: 'https://avatars.githubusercontent.com/u/3516716',
+        description: 'Desarrollador de Software',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/parejajd'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/parejajd/'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/parejajd'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/parejajd'
+            },
+            {
+                name: SocialNetworks.TELEGRAM,
+                url: '//t.me/parejajd'
+            },
+        ]
     }
 ]
 
