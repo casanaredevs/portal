@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { HomeComponent } from './home.component';
 
@@ -19,6 +20,7 @@ import { HomeComponent } from './home.component';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
   ]
 })
 export class HomeModule { }
