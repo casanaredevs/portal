@@ -8,6 +8,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { developerList } from './data-devs';
+import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -31,8 +32,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit (): void {
     this.divAvatar.forEach((_elementRef, index) => {
-      const clientWidth = this.divAvatar.get(index)?.nativeElement.clientWidth
-      this.renderer.setStyle(this.divAvatar.get(index)?.nativeElement, 'height', clientWidth + 'px')
+      let clientWidth = this.divAvatar.get(index)?.nativeElement.clientWidth
+
+      timer(100).subscribe({
+        next: () => {
+          this.renderer.setStyle(this.divAvatar.get(index)?.nativeElement, 'height', clientWidth + 'px')
+        }
+      })
     })
   }
 
