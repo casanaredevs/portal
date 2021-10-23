@@ -100,7 +100,7 @@ export const developerList: Developer[] = [
                 url: '//facebook.com/wilfredotorresariza'
             },
           ]
-    },    
+    },
     {
         name: 'Rommy Alexander',
         lastName: 'Duarte Barrra',
@@ -124,6 +124,30 @@ export const developerList: Developer[] = [
                 url: '//facebook.com/romny.duarte'
             },
         ]
-    }
+    },
+  {
+    name: 'Luis Guillermo',
+    lastName: 'Galindo Sánchez',
+    imageUrl: 'https://avatars.githubusercontent.com/u/8637358',
+    description: '👨‍💻Arquitecto y 💻Desarrollador de Software | ☁️Arquitecto de Soluciones AWS Asociado Certificado',
+    socialNetworks: [
+      {
+        name: SocialNetworks.GITHUB,
+        url: '//github.com/guillermoplus'
+      },
+      {
+        name: SocialNetworks.LINKED_IN,
+        url: '//linkedin.com/in/guillermoplus/'
+      },
+      {
+        name: SocialNetworks.TWITTER,
+        url: '//twitter.com/guillermoplus'
+      },
+      {
+        name: SocialNetworks.WHATSAPP,
+        url: '//api.whatsapp.com/send?phone=573214325747'
+      }
+    ]
+  }
 ]
 

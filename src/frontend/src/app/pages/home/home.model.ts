@@ -11,7 +11,6 @@ export interface SocialNetwork {
     name: SocialNetworks
 }
 
-
 export enum SocialNetworks {
     GITHUB = 'github',
     FACEBOOK = 'facebook',
@@ -21,3 +20,4 @@ export enum SocialNetworks {
     TWITTER = 'twitter',
     WHATSAPP = 'whatsapp',
 }
+
