@@ -125,29 +125,57 @@ export const developerList: Developer[] = [
             },
         ]
     },
-  {
-    name: 'Luis Guillermo',
-    lastName: 'Galindo Sánchez',
-    imageUrl: 'https://avatars.githubusercontent.com/u/8637358',
-    description: '👨‍💻Arquitecto y 💻Desarrollador de Software | ☁️Arquitecto de Soluciones AWS Asociado Certificado',
-    socialNetworks: [
-      {
-        name: SocialNetworks.GITHUB,
-        url: '//github.com/guillermoplus'
-      },
-      {
-        name: SocialNetworks.LINKED_IN,
-        url: '//linkedin.com/in/guillermoplus/'
-      },
-      {
-        name: SocialNetworks.TWITTER,
-        url: '//twitter.com/guillermoplus'
-      },
-      {
-        name: SocialNetworks.WHATSAPP,
-        url: '//api.whatsapp.com/send?phone=573214325747'
-      }
-    ]
-  }
+    {
+      name: 'Luis Guillermo',
+      lastName: 'Galindo Sánchez',
+      imageUrl: 'https://avatars.githubusercontent.com/u/8637358',
+      description: '👨‍💻Arquitecto y 💻Desarrollador de Software | ☁️Arquitecto de Soluciones AWS Asociado Certificado',
+      socialNetworks: [
+        {
+          name: SocialNetworks.GITHUB,
+          url: '//github.com/guillermoplus'
+        },
+        {
+          name: SocialNetworks.LINKED_IN,
+          url: '//linkedin.com/in/guillermoplus/'
+        },
+        {
+          name: SocialNetworks.TWITTER,
+          url: '//twitter.com/guillermoplus'
+        },
+        {
+          name: SocialNetworks.WHATSAPP,
+          url: '//api.whatsapp.com/send?phone=573214325747'
+        }
+      ]
+    },
+    {
+        name: 'Eduardo',
+        lastName: 'Hernández',
+        imageUrl: 'https://media-exp1.licdn.com/dms/image/C5603AQE7SqfgHUSvCA/profile-displayphoto-shrink_800_800/0/1609882141612?e=1640217600&v=beta&t=9kNseAVgJ6oRGVmhj9m_oW55WCNONnjOszOUy1SycdQ',
+        description: '👨‍💼📝Ingeniero de Sistemas/💻👨‍💻 Desarrollador de Software👨‍🔧',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/joredher'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/eduarherz'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/EduarHerz'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/EduarHerz'
+            },
+            {
+                name: SocialNetworks.TELEGRAM,
+                url: '//t.me/EduarHerz'
+            }
+        ]
+    },
 ]
 
