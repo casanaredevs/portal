@@ -27,7 +27,7 @@ export const developerList: Developer[] = [
     },
     {
         name: 'Juan David',
-        lastName: 'Pareja Soto',
+        lastName: 'Pareja Soto.',
         imageUrl: 'https://avatars.githubusercontent.com/u/3516716',
         description: 'Desarrollador de Software',
         socialNetworks: [
@@ -78,6 +78,50 @@ export const developerList: Developer[] = [
             {
                 name: SocialNetworks.TELEGRAM,
                 url: '//t.me/rohiriw'
+            },
+          ]
+    },
+    {
+        name: 'Wilfredo',
+        lastName: 'Torres Ariza',
+        imageUrl: 'https://avatars.githubusercontent.com/u/1329064',
+        description: 'Desarrollador de Software',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/torreswil'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/torreswil/'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/wilfredotorresariza'
+            },
+          ]
+    },    
+    {
+        name: 'Rommy Alexander',
+        lastName: 'Duarte Barrra',
+        imageUrl: 'https://avatars.githubusercontent.com/u/4432320',
+        description: 'Desarrollador de Software',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/romnyd'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/romnyduarte/'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/romnyd'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/romny.duarte'
             },
         ]
     }
