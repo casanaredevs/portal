@@ -52,6 +52,34 @@ export const developerList: Developer[] = [
                 url: '//t.me/parejajd'
             },
         ]
+    },
+    {
+        name: 'William Ricardo',
+        lastName: 'Torres Curtidor',
+        imageUrl: 'https://avatars.githubusercontent.com/u/8687190',
+        description: 'Fullstack Developer',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/Rohiri'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/rohiri/'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/rohiriw'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/rohiriw'
+            },
+            {
+                name: SocialNetworks.TELEGRAM,
+                url: '//t.me/rohiriw'
+            },
+        ]
     }
 ]
 
