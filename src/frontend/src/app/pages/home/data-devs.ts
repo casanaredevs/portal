@@ -124,6 +124,34 @@ export const developerList: Developer[] = [
                 url: '//facebook.com/romny.duarte'
             },
         ]
+    },
+    {
+        name: 'Eduardo',
+        lastName: 'Hernández',
+        imageUrl: 'https://avatars.githubusercontent.com/u/19540795',
+        description: '👨‍💼📝Ingeniero de Sistemas/💻👨‍💻 Desarrollador de Software👨‍🔧',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/joredher'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/eduarherz'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/EduarHerz'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/EduarHerz'
+            },
+            {
+                name: SocialNetworks.TELEGRAM,
+                url: '//t.me/EduarHerz'
+            }
+        ]
     }
 ]
 
