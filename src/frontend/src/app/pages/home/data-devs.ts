@@ -52,6 +52,30 @@ export const developerList: Developer[] = [
                 url: '//t.me/parejajd'
             },
         ]
+    },    
+    {
+        name: 'Rommy Alexander',
+        lastName: 'Duarte Barrra',
+        imageUrl: 'https://avatars.githubusercontent.com/u/4432320',
+        description: 'Desarrollador de Software',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/romnyd'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/romnyduarte/'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/romnyd'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/romny.duarte'
+            },
+        ]
     }
 ]
 
