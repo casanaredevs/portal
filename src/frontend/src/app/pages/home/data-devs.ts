@@ -52,6 +52,26 @@ export const developerList: Developer[] = [
                 url: '//t.me/parejajd'
             },
         ]
+    },
+    {
+        name: 'Wilfredo',
+        lastName: 'Torres Ariza',
+        imageUrl: 'https://avatars.githubusercontent.com/u/1329064',
+        description: 'Desarrollador de Software',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/torreswil'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/torreswil/'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/wilfredotorresariza'
+            }
+        ]
     }
 ]
 
