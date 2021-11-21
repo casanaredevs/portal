@@ -177,5 +177,28 @@ export const developerList: Developer[] = [
             }
         ]
     },
+  	{
+        name: 'Camilo',
+        lastName: 'Caquimbo Tabares',
+        imageUrl: 'https://avatars.githubusercontent.com/u/33238233?s=400&u=9d7c45efbf2b62e9fbd486d87a956a46851ce94c&v=4',
+        description: 'Ingeniero de Sistemas - Consultor Salesforce',        
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/camilocaquimbo'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/camilocaquimbo'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/ccaquimbo'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/camilocaquimbotabares'
+            }
+        ]
+    },
 ]
-
