@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       if (clientWidth !== clientHeight) {
         this.renderer.setStyle(this.divAvatar.get(index)?.nativeElement, 'height', clientWidth + 'px')
 
-        timer(600).subscribe({
+        timer(200).subscribe({
           next: () => this.ngAfterViewInit()
         })
       }

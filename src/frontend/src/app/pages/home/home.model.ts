@@ -4,6 +4,7 @@ export interface Developer {
     imageUrl?: string;
     socialNetworks?: SocialNetwork[]
     description?: string;
+    technologies?: Technologies[]
 }
 
 export interface SocialNetwork {
@@ -21,3 +22,28 @@ export enum SocialNetworks {
     WHATSAPP = 'whatsapp',
 }
 
+export enum Technologies {
+    PYTHON = 'python',
+    JAVA = 'java',
+    NET = 'net',
+    JAVASCRIPT = 'javascript',
+    C_SHARP = 'c_sharp',
+    PHP = 'php',
+    C_C_PLUSPLUS = 'c_c_plusplus',
+    TYPESCRIPT = 'typescript',
+    NODEJS = 'nodejs',
+    DART = 'dart',
+    SWIFT = 'swift',
+    OBJECTIVE_C = 'objective_c',
+    DJANGO = 'django',
+    SPRING = 'spring',
+    LARAVEL = 'laravel',
+    REACT = 'react',
+    ANGULAR = 'angular',
+    BLAZOR = 'blazor',
+    VUEJS = 'vuejs',
+    NESTJS = 'nestjs',
+    ADONISJS = 'adonisjs',
+    FLUTTER = 'flutter',
+    IONIC = 'ionic',
+}

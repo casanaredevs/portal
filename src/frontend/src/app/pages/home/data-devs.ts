@@ -1,4 +1,4 @@
-import { Developer, SocialNetworks } from "./home.model";
+import { Developer, SocialNetworks, Technologies } from "./home.model";
 
 export const developerList: Developer[] = [
     {
@@ -23,6 +23,11 @@ export const developerList: Developer[] = [
                 name: SocialNetworks.TELEGRAM,
                 url: '//t.me/aldairguarupe'
             },
+        ],
+        technologies: [
+            Technologies.ANGULAR,
+            Technologies.IONIC,
+            Technologies.FLUTTER,
         ]
     },
     {
@@ -79,7 +84,7 @@ export const developerList: Developer[] = [
                 name: SocialNetworks.TELEGRAM,
                 url: '//t.me/rohiriw'
             },
-          ]
+        ]
     },
     {
         name: 'Wilfredo',
@@ -99,7 +104,7 @@ export const developerList: Developer[] = [
                 name: SocialNetworks.FACEBOOK,
                 url: '//facebook.com/wilfredotorresariza'
             },
-          ]
+        ]
     },
     {
         name: 'Rommy Alexander',
@@ -126,28 +131,28 @@ export const developerList: Developer[] = [
         ]
     },
     {
-      name: 'Luis Guillermo',
-      lastName: 'Galindo Sánchez',
-      imageUrl: 'https://avatars.githubusercontent.com/u/8637358',
-      description: '👨‍💻Arquitecto y 💻Desarrollador de Software | ☁️Arquitecto de Soluciones AWS Asociado Certificado',
-      socialNetworks: [
-        {
-          name: SocialNetworks.GITHUB,
-          url: '//github.com/guillermoplus'
-        },
-        {
-          name: SocialNetworks.LINKED_IN,
-          url: '//linkedin.com/in/guillermoplus/'
-        },
-        {
-          name: SocialNetworks.TWITTER,
-          url: '//twitter.com/guillermoplus'
-        },
-        {
-          name: SocialNetworks.WHATSAPP,
-          url: '//api.whatsapp.com/send?phone=573214325747'
-        }
-      ]
+        name: 'Luis Guillermo',
+        lastName: 'Galindo Sánchez',
+        imageUrl: 'https://avatars.githubusercontent.com/u/8637358',
+        description: '👨‍💻Arquitecto y 💻Desarrollador de Software | ☁️Arquitecto de Soluciones AWS Asociado Certificado',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/guillermoplus'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/guillermoplus/'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/guillermoplus'
+            },
+            {
+                name: SocialNetworks.WHATSAPP,
+                url: '//api.whatsapp.com/send?phone=573214325747'
+            }
+        ]
     },
     {
         name: 'Eduardo',
@@ -177,11 +182,11 @@ export const developerList: Developer[] = [
             }
         ]
     },
-  	{
+    {
         name: 'Camilo',
         lastName: 'Caquimbo Tabares',
         imageUrl: 'https://avatars.githubusercontent.com/u/33238233?s=400&u=9d7c45efbf2b62e9fbd486d87a956a46851ce94c&v=4',
-        description: 'Ingeniero de Sistemas - Consultor Salesforce',        
+        description: 'Ingeniero de Sistemas - Consultor Salesforce',
         socialNetworks: [
             {
                 name: SocialNetworks.GITHUB,
