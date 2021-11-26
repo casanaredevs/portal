@@ -104,6 +104,10 @@ export const developerList: Developer[] = [
                 name: SocialNetworks.FACEBOOK,
                 url: '//facebook.com/wilfredotorresariza'
             },
+        ],
+        technologies: [
+            Technologies.LARAVEL,
+            Technologies.VUEJS,
         ]
     },
     {
