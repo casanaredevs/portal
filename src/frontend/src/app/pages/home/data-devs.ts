@@ -210,4 +210,29 @@ export const developerList: Developer[] = [
             }
         ]
     },
+    {
+      name: 'Jonathan',
+      lastName: 'Corredor',
+      imageUrl: 'https://avatars.githubusercontent.com/u/534642?s=400',
+      description: 'Backend Developer',
+      socialNetworks: [
+          {
+              name: SocialNetworks.GITHUB,
+              url: '//github.com/jonathancod'
+          },
+          {
+              name: SocialNetworks.LINKED_IN,
+              url: '//linkedin.com/in/jonathancod'
+          },
+          {
+              name: SocialNetworks.TWITTER,
+              url: '//twitter.com/jonathanc0d'
+          },
+      ],
+      technologies: [
+        Technologies.NODEJS,
+        Technologies.DJANGO,
+        Technologies.C_SHARP,
+    ]
+  },
 ]
