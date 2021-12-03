@@ -235,4 +235,25 @@ export const developerList: Developer[] = [
         Technologies.C_SHARP,
     ]
   },
+    {
+      name: 'Julián',
+      lastName: 'Corredor',
+      imageUrl: 'https://avatars.githubusercontent.com/u/28745532?s=400',
+      description: 'Desarrollador de Software',
+      socialNetworks: [
+          {
+              name: SocialNetworks.GITHUB,
+              url: '//github.com/unmanbarbao'
+          },
+          {
+              name: SocialNetworks.TWITTER,
+              url: '//twitter.com/unmanbarbao'
+          },
+      ],
+      technologies: [
+        Technologies.NODEJS,
+        Technologies.PYTHON,
+        Technologies.VUEJS,
+    ]
+  },
 ]
