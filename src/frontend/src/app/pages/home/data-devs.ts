@@ -114,7 +114,7 @@ export const developerList: Developer[] = [
         name: 'Rommy Alexander',
         lastName: 'Duarte Barrra',
         imageUrl: 'https://avatars.githubusercontent.com/u/4432320',
-        description: 'Desarrollador de Software',
+        description: '☁️ Arquitecto de Software ☁️ Arquitecto Cloud ☁️ Arquitecto Mobile',
         socialNetworks: [
             {
                 name: SocialNetworks.GITHUB,
@@ -132,6 +132,22 @@ export const developerList: Developer[] = [
                 name: SocialNetworks.FACEBOOK,
                 url: '//facebook.com/romny.duarte'
             },
+            {
+                name: SocialNetworks.WHATSAPP,
+                url: '//api.whatsapp.com/send?phone=573114810158'
+            }
+            
+        ],
+        technologies: [
+            Technologies.NET,
+            Technologies.C_SHARP,
+            Technologies.FLUTTER,
+            Technologies.JAVA,
+            Technologies.PHP,
+            Technologies.IONIC,
+            Technologies.NODEJS,
+            Technologies.BLAZOR,
+            Technologies.SPRING
         ]
     },
     {
