@@ -46,4 +46,5 @@ export enum Technologies {
     ADONISJS = 'adonisjs',
     FLUTTER = 'flutter',
     IONIC = 'ionic',
+    A_FRAME = 'a_frame'
 }
