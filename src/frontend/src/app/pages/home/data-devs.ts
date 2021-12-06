@@ -200,6 +200,13 @@ export const developerList: Developer[] = [
                 name: SocialNetworks.TELEGRAM,
                 url: '//t.me/EduarHerz'
             }
+        ],
+        technologies: [
+            Technologies.LARAVEL,
+            Technologies.VUEJS,
+            Technologies.PHP,
+            Technologies.JAVASCRIPT,
+            Technologies.A_FRAME
         ]
     },
     {
