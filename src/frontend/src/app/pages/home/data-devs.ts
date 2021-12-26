@@ -279,4 +279,25 @@ export const developerList: Developer[] = [
         Technologies.VUEJS,
     ]
   },
+    {
+        name: 'Emanuel',
+        lastName: 'Castillo.',
+        imageUrl: 'https://avatars.githubusercontent.com/u/37216610?v=4',
+        description: 'Entrepreneur',
+        socialNetworks:
+        [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/emacaz'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/emacastillozam/'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/emacastillozam'
+            },
+        ],
+    },
 ]
