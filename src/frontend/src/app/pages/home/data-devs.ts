@@ -285,10 +285,7 @@ export const developerList: Developer[] = [
     imageUrl: 'https://andersonpava.com/images/about.jpg',
     description: 'Marketing Digital - Inbound Marketing - SEO / SEM / SMO / SMM',
     socialNetworks: [
-        {
-            name: SocialNetworks.GITHUB,
-            url: '//github.com/andersonpava'
-        },
+
         {
             name: SocialNetworks.LINKED_IN,
             url: '//linkedin.com/in/jhon-anderson-pava-fino-5b89816b'
@@ -312,6 +309,10 @@ export const developerList: Developer[] = [
         {
             name: SocialNetworks.WHATSAPP,
             url: '//api.whatsapp.com/send?phone=573202778697'
+        },
+        {
+            name: SocialNetworks.GITHUB,
+            url: '//github.com/andersonpava'
         },
 
     ]
