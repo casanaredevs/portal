@@ -177,7 +177,7 @@ export const developerList: Developer[] = [
     {
         name: 'Eduardo',
         lastName: 'Hernández',
-        imageUrl: 'https://media-exp1.licdn.com/dms/image/C5603AQE7SqfgHUSvCA/profile-displayphoto-shrink_800_800/0/1609882141612?e=1640217600&v=beta&t=9kNseAVgJ6oRGVmhj9m_oW55WCNONnjOszOUy1SycdQ',
+        imageUrl: 'https://scontent.fbog2-3.fna.fbcdn.net/v/t39.30808-6/241816338_1458210281228342_4024164446512397550_n.jpg?_nc_cat=104&ccb=1-5&_nc_sid=09cbfe&_nc_eui2=AeGzJnVe09ZTiDRx2sLTT2k8_THhv72q92D9MeG_var3YDGLJHucFya9dfxSQWW46lRmUzv5E3Foo-Yv7jnMr4-8&_nc_ohc=jbWfgCA8RaMAX_2YHbk&_nc_oc=AQmkRNR-LqdNXr9tc46yMDcyrtNGf1vbC-1KaqxwVxLm_Kg4pyghLASEjoLqA3WUfYY&_nc_ht=scontent.fbog2-3.fna&oh=00_AT840KGRvTGEivXsCaf6vTn6m-RwzNv0GihuQGrsNmNopg&oe=61CDFEF3',
         description: '👨‍💼📝Ingeniero de Sistemas/💻👨‍💻 Desarrollador de Software👨‍🔧',
         socialNetworks: [
             {
