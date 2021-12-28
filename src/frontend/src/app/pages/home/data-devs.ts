@@ -177,7 +177,7 @@ export const developerList: Developer[] = [
     {
         name: 'Eduardo',
         lastName: 'Hernández',
-        imageUrl: './../assets/images/dev_jorge.jpg',
+        imageUrl: 'https://media-exp1.licdn.com/dms/image/C5603AQE7SqfgHUSvCA/profile-displayphoto-shrink_800_800/0/1609882141612?e=1640217600&v=beta&t=9kNseAVgJ6oRGVmhj9m_oW55WCNONnjOszOUy1SycdQ',
         description: '👨‍💼📝Ingeniero de Sistemas/💻👨‍💻 Desarrollador de Software👨‍🔧',
         socialNetworks: [
             {
@@ -294,11 +294,11 @@ export const developerList: Developer[] = [
         {
             name: SocialNetworks.FACEBOOK,
             url: '//facebook.com/andersonpava'
-        }
+        },
         {
             name: SocialNetworks.INSTAGRAM,
             url: '//instagram.com/anderpava'
-        }
+        },
         {
             name: SocialNetworks.TWITTER,
             url: '//twitter.com/anderpava'
