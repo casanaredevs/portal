@@ -177,7 +177,7 @@ export const developerList: Developer[] = [
     {
         name: 'Eduardo',
         lastName: 'Hernández',
-        imageUrl: 'https://media-exp1.licdn.com/dms/image/C5603AQE7SqfgHUSvCA/profile-displayphoto-shrink_800_800/0/1609882141612?e=1640217600&v=beta&t=9kNseAVgJ6oRGVmhj9m_oW55WCNONnjOszOUy1SycdQ',
+        imageUrl: './../assets/images/dev_jorge.jpg',
         description: '👨‍💼📝Ingeniero de Sistemas/💻👨‍💻 Desarrollador de Software👨‍🔧',
         socialNetworks: [
             {
@@ -279,6 +279,7 @@ export const developerList: Developer[] = [
         Technologies.VUEJS,
     ]
   },
+
   {
     name: 'Jhon Anderson',
     lastName: 'Pava Fino',
@@ -317,4 +318,26 @@ export const developerList: Developer[] = [
 
     ]
 },
+
+    {
+        name: 'Emanuel',
+        lastName: 'Castillo.',
+        imageUrl: 'https://avatars.githubusercontent.com/u/37216610?v=4',
+        description: 'Entrepreneur',
+        socialNetworks:
+        [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/emacaz'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/emacastillozam/'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/emacastillozam'
+            },
+        ],
+    },
 ]
