@@ -294,11 +294,11 @@ export const developerList: Developer[] = [
         {
             name: SocialNetworks.FACEBOOK,
             url: '//facebook.com/andersonpava'
-        }
+        },
         {
             name: SocialNetworks.INSTAGRAM,
             url: '//instagram.com/anderpava'
-        }
+        },
         {
             name: SocialNetworks.TWITTER,
             url: '//twitter.com/anderpava'
