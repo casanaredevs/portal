@@ -4,7 +4,7 @@ export const developerList: Developer[] = [
     {
         name: 'Aldair',
         lastName: 'Guarupe',
-        imageUrl: 'https://media-exp1.licdn.com/dms/image/C5603AQHLKrE4aOrdmw/profile-displayphoto-shrink_800_800/0/1618151074698?e=1639612800&v=beta&t=K89gw-Vt33Dl9hki4l8Q1q881DfILvdMdcYfkWypm6s',
+        imageUrl: 'https://s.gravatar.com/avatar/8d4d674e52413ee001c1619a5dda6271?s=400',
         description: 'Desarrollador de Apps',
         socialNetworks: [
             {
