@@ -340,4 +340,20 @@ export const developerList: Developer[] = [
             },
         ],
     },
+    {
+        name: 'Nelson',
+        lastName: 'Mayorga',
+        imageUrl: 'https://avatars.githubusercontent.com/u/24848191?v=4',
+        description: 'Frontend Developer',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/nelsondmayorga'
+            }
+        ],
+        technologies: [
+          Technologies.ANGULAR,
+          Technologies.NODEJS
+      ]
+    },
 ]
