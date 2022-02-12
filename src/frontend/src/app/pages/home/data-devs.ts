@@ -356,4 +356,35 @@ export const developerList: Developer[] = [
           Technologies.NODEJS
       ]
     },
+    {
+        name: 'Luis Jeferson',
+        lastName: 'Teheran Fernandez',
+        imageUrl: 'https://avatars.githubusercontent.com/u/30940067?v=4',
+        description: '💻Front-End & 🧩Progressive Web Apps Developer✨',
+        socialNetworks: [
+    
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/jtfernandezdev/'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/jtfernandezdev/'
+            },
+            {
+                name: SocialNetworks.INSTAGRAM,
+                url: '//instagram.com/shinacer/'
+            },
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/JTFernandez'
+            },
+    
+        ],
+        technologies: [
+          Technologies.VUEJS,
+          Technologies.JAVASCRIPT,
+          Technologies.PHP,
+      ]
+    },
 ]
