@@ -9,8 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
-import { ToolbarModule } from '@components/toolbar/toolbar.module';
-import { FooterModule } from '@components/footer/footer.module';
+import { FooterModule, ToolbarModule } from '@shared/components';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -37,4 +36,4 @@ import { AppComponent } from './app.component';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

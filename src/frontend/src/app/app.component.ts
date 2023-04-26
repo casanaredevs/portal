@@ -1,9 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
-import { MatSidenav } from '@angular/material/sidenav';
-import { DomSanitizer } from '@angular/platform-browser';
-import { CommonService } from '@services/common.service';
-
+import { Component, ViewChild } from '@angular/core'
+import { MatIconRegistry } from '@angular/material/icon'
+import { MatSidenav } from '@angular/material/sidenav'
+import { DomSanitizer } from '@angular/platform-browser'
+import { CommonService } from '@shared/services/common.service'
 
 @Component({
   selector: 'app-root',
@@ -15,21 +14,21 @@ export class AppComponent {
   @ViewChild('mainSidenav', { static: true }) navigationSidenav!: MatSidenav
   menuMainItems: MenuItem[]
 
-  constructor (
-    public commonService: CommonService,
+  constructor(
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
+    public commonService: CommonService,
   ) {
     this.menuMainItems = this._menuMainItems
 
     this.registerIconsSocial()
   }
 
-  private get _menuMainItems (): MenuItem[] {
+  private get _menuMainItems(): MenuItem[] {
     return [
       {
         label: 'Inicio',
-        routerLink: '/home',
+        routerLink: '/',
         icon: 'home',
       },
     ]
@@ -38,7 +37,7 @@ export class AppComponent {
   /**
    * Agrega los iconos sociales a la coleccion de iconos
    */
-  private registerIconsSocial (): void {
+  private registerIconsSocial(): void {
     const iconsList = [
       { name: 'facebook', location: '/assets/icons/social/facebook.svg' },
       { name: 'instagram', location: '/assets/icons/social/instagram.svg' },
@@ -71,6 +70,7 @@ export class AppComponent {
       { name: 'adonisjs', location: '/assets/icons/technologies/adonisjs.svg' },
       { name: 'flutter', location: '/assets/icons/technologies/flutter.svg' },
       { name: 'ionic', location: '/assets/icons/technologies/ionic.svg' },
+      { name: 'a_frame', location: '/assets/icons/technologies/a_frame.svg' },
     ]
 
     for (let i = 0; i < iconsList.length; i++) {

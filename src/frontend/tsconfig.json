@@ -14,13 +14,12 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2017",
-    "module": "es2020",
-    "lib": ["es2018", "dom"],
+    "target": "es2022",
+    "module": "es2022",
+    "lib": ["es2022", "dom"],
     "paths": {
       "@environment/*": ["./src/environments/*"],
-      "@services/*": ["./src/app/services/*"],
-      "@components/*": ["./src/app/components/*"]
+      "@shared/*": ["./src/app/shared/*"]
     }
   },
   "angularCompilerOptions": {

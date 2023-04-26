@@ -28,6 +28,7 @@ export const developerList: Developer[] = [
             Technologies.ANGULAR,
             Technologies.IONIC,
             Technologies.FLUTTER,
+            Technologies.REACT
         ]
     },
     {
@@ -234,90 +235,90 @@ export const developerList: Developer[] = [
         ]
     },
     {
-      name: 'Jonathan',
-      lastName: 'Corredor',
-      imageUrl: 'https://avatars.githubusercontent.com/u/534642?s=400',
-      description: 'Backend Developer',
-      socialNetworks: [
-          {
-              name: SocialNetworks.GITHUB,
-              url: '//github.com/jonathancod'
-          },
-          {
-              name: SocialNetworks.LINKED_IN,
-              url: '//linkedin.com/in/jonathancod'
-          },
-          {
-              name: SocialNetworks.TWITTER,
-              url: '//twitter.com/jonathanc0d'
-          },
-      ],
-      technologies: [
-        Technologies.NODEJS,
-        Technologies.DJANGO,
-        Technologies.C_SHARP,
-    ]
-  },
+        name: 'Jonathan',
+        lastName: 'Corredor',
+        imageUrl: 'https://avatars.githubusercontent.com/u/534642?s=400',
+        description: 'Backend Developer',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/jonathancod'
+            },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/jonathancod'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/jonathanc0d'
+            },
+        ],
+        technologies: [
+            Technologies.NODEJS,
+            Technologies.DJANGO,
+            Technologies.C_SHARP,
+        ]
+    },
     {
-      name: 'Julián',
-      lastName: 'Corredor',
-      imageUrl: 'https://avatars.githubusercontent.com/u/28745532?s=400',
-      description: 'Desarrollador de Software',
-      socialNetworks: [
-          {
-              name: SocialNetworks.GITHUB,
-              url: '//github.com/unmanbarbao'
-          },
-          {
-              name: SocialNetworks.TWITTER,
-              url: '//twitter.com/unmanbarbao'
-          },
-      ],
-      technologies: [
-        Technologies.NODEJS,
-        Technologies.PYTHON,
-        Technologies.VUEJS,
-    ]
-  },
+        name: 'Julián',
+        lastName: 'Corredor',
+        imageUrl: 'https://avatars.githubusercontent.com/u/28745532?s=400',
+        description: 'Desarrollador de Software',
+        socialNetworks: [
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/unmanbarbao'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/unmanbarbao'
+            },
+        ],
+        technologies: [
+            Technologies.NODEJS,
+            Technologies.PYTHON,
+            Technologies.VUEJS,
+        ]
+    },
 
-  {
-    name: 'Jhon Anderson',
-    lastName: 'Pava Fino',
-    imageUrl: 'https://andersonpava.com/images/about.jpg',
-    description: 'Marketing Digital - Inbound Marketing - SEO / SEM / SMO / SMM',
-    socialNetworks: [
+    {
+        name: 'Jhon Anderson',
+        lastName: 'Pava Fino',
+        imageUrl: 'https://andersonpava.com/assets/img/attachment-07.jpg',
+        description: 'Marketing Digital - Inbound Marketing - SEO / SEM / SMO / SMM',
+        socialNetworks: [
 
-        {
-            name: SocialNetworks.LINKED_IN,
-            url: '//linkedin.com/in/jhon-anderson-pava-fino-5b89816b'
-        },
-        {
-            name: SocialNetworks.FACEBOOK,
-            url: '//facebook.com/andersonpava'
-        },
-        {
-            name: SocialNetworks.INSTAGRAM,
-            url: '//instagram.com/anderpava'
-        },
-        {
-            name: SocialNetworks.TWITTER,
-            url: '//twitter.com/anderpava'
-        },
-        {
-            name: SocialNetworks.TELEGRAM,
-            url: '//t.me/Anderpava'
-        },
-        {
-            name: SocialNetworks.WHATSAPP,
-            url: '//api.whatsapp.com/send?phone=573202778697'
-        },
-        {
-            name: SocialNetworks.GITHUB,
-            url: '//github.com/andersonpava'
-        },
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/jhon-anderson-pava-fino-5b89816b'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/andersonpava'
+            },
+            {
+                name: SocialNetworks.INSTAGRAM,
+                url: '//instagram.com/anderpava'
+            },
+            {
+                name: SocialNetworks.TWITTER,
+                url: '//twitter.com/anderpava'
+            },
+            {
+                name: SocialNetworks.TELEGRAM,
+                url: '//t.me/Anderpava'
+            },
+            {
+                name: SocialNetworks.WHATSAPP,
+                url: '//api.whatsapp.com/send?phone=573202778697'
+            },
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/andersonpava'
+            },
 
-    ]
-},
+        ]
+    },
 
     {
         name: 'Emanuel',
@@ -325,20 +326,20 @@ export const developerList: Developer[] = [
         imageUrl: 'https://avatars.githubusercontent.com/u/37216610?v=4',
         description: 'Entrepreneur',
         socialNetworks:
-        [
-            {
-                name: SocialNetworks.GITHUB,
-                url: '//github.com/emacaz'
-            },
-            {
-                name: SocialNetworks.LINKED_IN,
-                url: '//linkedin.com/in/emacastillozam/'
-            },
-            {
-                name: SocialNetworks.TWITTER,
-                url: '//twitter.com/emacastillozam'
-            },
-        ],
+            [
+                {
+                    name: SocialNetworks.GITHUB,
+                    url: '//github.com/emacaz'
+                },
+                {
+                    name: SocialNetworks.LINKED_IN,
+                    url: '//linkedin.com/in/emacastillozam/'
+                },
+                {
+                    name: SocialNetworks.TWITTER,
+                    url: '//twitter.com/emacastillozam'
+                },
+            ],
     },
     {
         name: 'Nelson',
@@ -352,9 +353,9 @@ export const developerList: Developer[] = [
             }
         ],
         technologies: [
-          Technologies.ANGULAR,
-          Technologies.NODEJS
-      ]
+            Technologies.ANGULAR,
+            Technologies.NODEJS
+        ]
     },
     {
         name: 'Luis Jeferson',
@@ -362,7 +363,7 @@ export const developerList: Developer[] = [
         imageUrl: 'https://avatars.githubusercontent.com/u/30940067?v=4',
         description: '💻Front-End & 🧩Progressive Web Apps Developer✨',
         socialNetworks: [
-    
+
             {
                 name: SocialNetworks.LINKED_IN,
                 url: '//linkedin.com/in/jtfernandezdev/'
@@ -379,12 +380,12 @@ export const developerList: Developer[] = [
                 name: SocialNetworks.GITHUB,
                 url: '//github.com/JTFernandez'
             },
-    
+
         ],
         technologies: [
-          Technologies.VUEJS,
-          Technologies.JAVASCRIPT,
-          Technologies.PHP,
-      ]
+            Technologies.VUEJS,
+            Technologies.JAVASCRIPT,
+            Technologies.PHP,
+        ]
     },
 ]

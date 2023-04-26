@@ -8,8 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { ToolbarComponent } from './toolbar.component';
 
-
-
 @NgModule({
   declarations: [
     ToolbarComponent
@@ -24,4 +22,4 @@ import { ToolbarComponent } from './toolbar.component';
   ],
   exports: [ToolbarComponent]
 })
-export class ToolbarModule { }
+export class ToolbarModule {}

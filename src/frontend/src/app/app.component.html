@@ -15,13 +15,13 @@
         (click)="commonService.isMobile ? navigationSidenav.toggle() : null"
       >
         <mat-icon
-          matListIcon
+          matListItemIcon
           [class]="itemActive.isActive ? 'icon-active' : undefined"
         >
           {{ _item.icon }}
         </mat-icon>
         <a
-          matLine
+          matListItemTitle
           [routerLink]="_item.routerLink"
           routerLinkActive
           #itemActive="routerLinkActive"
