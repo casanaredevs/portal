@@ -19,12 +19,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   @ViewChildren('divAvatar') divAvatar!: QueryList<ElementRef<HTMLDivElement>>
 
-  devsList = developerList
+  developers = developerList
 
   constructor (private renderer: Renderer2) { }
 
   ngOnInit (): void {
-    this.devsList.map((_dev) => {
+    this.developers.map((_dev) => {
       _dev.imageUrl = _dev.imageUrl || '/assets/images/avatar_blank.png'
       return _dev
     })
