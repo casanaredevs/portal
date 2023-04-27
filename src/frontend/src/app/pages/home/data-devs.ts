@@ -200,6 +200,10 @@ export const developerList: Developer[] = [
             {
                 name: SocialNetworks.TELEGRAM,
                 url: '//t.me/EduarHerz'
+            },
+            {
+                name: SocialNetworks.WHATSAPP,
+                url: '//api.whatsapp.com/send?phone=573108731905'
             }
         ],
         technologies: [
@@ -280,14 +284,12 @@ export const developerList: Developer[] = [
             Technologies.VUEJS,
         ]
     },
-
     {
         name: 'Jhon Anderson',
         lastName: 'Pava Fino',
         imageUrl: 'https://andersonpava.com/assets/img/attachment-07.jpg',
         description: 'Marketing Digital - Inbound Marketing - SEO / SEM / SMO / SMM',
         socialNetworks: [
-
             {
                 name: SocialNetworks.LINKED_IN,
                 url: '//linkedin.com/in/jhon-anderson-pava-fino-5b89816b'
