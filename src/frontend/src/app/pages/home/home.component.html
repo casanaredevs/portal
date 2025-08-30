@@ -1,39 +1,39 @@
-<div class="container py-2">
-  <div class="row">
-    <div class="col-12">
+<div class="max-w-7xl mx-auto px-4 py-2 bg-white dark:bg-gray-900 min-h-screen">
+  <div class="flex flex-wrap">
+    <div class="w-full">
       <br />
 
-      <h1>Grupo de desarrolladores de Casanare</h1>
+      <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">Grupo de desarrolladores de Casanare</h1>
 
       <br />
 
-      <p>
+      <p class="text-gray-700 dark:text-gray-300">
         Este grupo fue creado con fines comunitarios, apoyarnos, aprender de
         tecnologías y novedades del ecosistema de transformación digital.
       </p>
     </div>
   </div>
 
-  <div class="row my-4">
-    <div *ngFor="let dev_ of developers" class="col-12 col-md-6 col-lg-3 mb-4">
-      <mat-card class="h-100 rounded-3">
-        <mat-card-content class="h-100">
-          <div class="d-flex">
-            <div class="d-flex justify-content-center w-75">
-              <div #divAvatar class="avatar">
-                <img [src]="dev_.imageUrl" />
+  <div class="flex flex-wrap my-4">
+    <div *ngFor="let dev_ of developers" class="w-full md:w-1/2 lg:w-1/4 mb-4 px-2">
+      <mat-card class="h-full rounded-xl bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-800/20">
+        <mat-card-content class="h-full">
+          <div class="flex">
+            <div class="flex justify-center w-3/4">
+              <div #divAvatar class="avatar w-full aspect-square rounded-xl overflow-hidden">
+                <img [src]="dev_.imageUrl" class="h-full w-full object-cover" alt="{{dev_.name}} {{dev_.lastName}}" />
               </div>
             </div>
 
-            <div
-              class="d-flex flex-grow-1 justify-content-center align-items-center flex-column"
-            >
+            <div class="flex flex-col flex-grow justify-center items-center">
               <a
                 *ngFor="let social_ of dev_.socialNetworks"
                 mat-icon-button
                 [href]="social_.url"
                 [matTooltip]="social_.name | titlecase"
                 target="_blank"
+                rel="noopener noreferrer"
+                class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
               >
                 <mat-icon [svgIcon]="social_.name"></mat-icon>
               </a>
@@ -42,16 +42,17 @@
 
           <br />
 
-          <h2 class="text-center mb-1" style="line-height: 1.4rem">
+          <h2 class="text-center mb-1 text-lg font-medium leading-tight text-gray-900 dark:text-white">
             {{ dev_.name }} {{ dev_.lastName }}
           </h2>
-          <p class="text-center">{{ dev_.description }}</p>
+          <p class="text-center text-sm text-gray-600 dark:text-gray-400">{{ dev_.description }}</p>
 
-          <div class="d-flex justify-content-center flex-wrap">
+          <div class="flex justify-center flex-wrap mt-3">
             <div *ngFor="let technology_ of dev_.technologies" class="px-1">
               <mat-icon
                 [svgIcon]="technology_"
                 [matTooltip]="technology_ | titlecase"
+                class="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300"
               ></mat-icon>
             </div>
           </div>

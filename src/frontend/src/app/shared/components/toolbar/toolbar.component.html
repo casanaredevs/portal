@@ -1,18 +1,18 @@
-<div [ngClass]="{ 'bgd-primary': commonService.isMobile }">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <mat-toolbar color="primary">
+<div [ngClass]="{ 'bg-indigo-900 dark:bg-indigo-950': commonService.isMobile }" class="bg-white dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex flex-wrap">
+      <div class="w-full">
+        <mat-toolbar color="primary" class="bg-indigo-900 dark:bg-indigo-950">
           <mat-toolbar-row [ngClass]="{ 'px-0': commonService.isMobile }">
             <button
               *ngIf="commonService.isMobile"
               mat-icon-button
               (click)="navigationSidenav.emit()"
-              class="mr-2"
+              class="mr-2 text-white"
             >
               <mat-icon>menu</mat-icon>
             </button>
-            <span routerLink="/" class="pointer">Casanare Devs</span>
+            <span routerLink="/" class="cursor-pointer text-white font-semibold">Casanare Devs</span>
           </mat-toolbar-row>
         </mat-toolbar>
       </div>
