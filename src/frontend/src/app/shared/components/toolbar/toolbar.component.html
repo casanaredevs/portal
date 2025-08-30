@@ -1,19 +1,86 @@
 <div [ngClass]="{ 'bg-indigo-900 dark:bg-indigo-950': commonService.isMobile }" class="bg-white dark:bg-gray-900">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="flex flex-wrap">
+  <div class="w-full px-4">
+    <div class="flex flex-wrap max-w-7xl mx-auto">
       <div class="w-full">
         <mat-toolbar color="primary" class="bg-indigo-900 dark:bg-indigo-950">
-          <mat-toolbar-row [ngClass]="{ 'px-0': commonService.isMobile }">
+          <mat-toolbar-row class="flex items-center justify-between w-full" [ngClass]="{ 'px-0': commonService.isMobile }">
+            <!-- Logo -->
+            <div class="flex items-center">
+              <img
+                src="/assets/images/logo-mock.svg"
+                alt="Casanare Devs"
+                routerLink="/"
+                class="cursor-pointer h-8 w-auto"
+              />
+            </div>
+
+            <!-- Desktop Menu -->
+            <nav class="hidden md:flex items-center space-x-8">
+              <a
+                routerLink="/"
+                routerLinkActive="text-yellow-300"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="text-white hover:text-yellow-300 transition-colors duration-200 font-medium"
+              >
+                Comunidad
+              </a>
+              <a
+                routerLink="/eventos"
+                routerLinkActive="text-yellow-300"
+                class="text-white hover:text-yellow-300 transition-colors duration-200 font-medium"
+              >
+                Eventos
+              </a>
+              <a
+                routerLink="/contacto"
+                routerLinkActive="text-yellow-300"
+                class="text-white hover:text-yellow-300 transition-colors duration-200 font-medium"
+              >
+                Contacto
+              </a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
             <button
               *ngIf="commonService.isMobile"
               mat-icon-button
-              (click)="navigationSidenav.emit()"
-              class="mr-2 text-white"
+              (click)="toggleMobileMenu()"
+              class="text-white md:hidden"
             >
-              <mat-icon>menu</mat-icon>
+              <mat-icon>{{ showMobileMenu ? 'close' : 'menu' }}</mat-icon>
             </button>
-            <span routerLink="/" class="cursor-pointer text-white font-semibold">Casanare Devs</span>
           </mat-toolbar-row>
+
+          <!-- Mobile Menu -->
+          <div *ngIf="showMobileMenu && commonService.isMobile" class="md:hidden bg-indigo-800 dark:bg-indigo-900">
+            <nav class="px-4 py-2 space-y-2">
+              <a
+                routerLink="/"
+                routerLinkActive="text-yellow-300 bg-indigo-700"
+                [routerLinkActiveOptions]="{exact: true}"
+                (click)="closeMobileMenu()"
+                class="block px-3 py-2 text-white hover:text-yellow-300 hover:bg-indigo-700 rounded-md transition-colors duration-200 font-medium"
+              >
+                Comunidad
+              </a>
+              <a
+                routerLink="/eventos"
+                routerLinkActive="text-yellow-300 bg-indigo-700"
+                (click)="closeMobileMenu()"
+                class="block px-3 py-2 text-white hover:text-yellow-300 hover:bg-indigo-700 rounded-md transition-colors duration-200 font-medium"
+              >
+                Eventos
+              </a>
+              <a
+                routerLink="/contacto"
+                routerLinkActive="text-yellow-300 bg-indigo-700"
+                (click)="closeMobileMenu()"
+                class="block px-3 py-2 text-white hover:text-yellow-300 hover:bg-indigo-700 rounded-md transition-colors duration-200 font-medium"
+              >
+                Contacto
+              </a>
+            </nav>
+          </div>
         </mat-toolbar>
       </div>
     </div>

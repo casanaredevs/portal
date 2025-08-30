@@ -14,6 +14,16 @@ export class ToolbarComponent {
 
   @Output() navigationSidenav = new EventEmitter<void>()
 
+  showMobileMenu = false;
+
   constructor(public commonService: CommonService) {}
+
+  toggleMobileMenu(): void {
+    this.showMobileMenu = !this.showMobileMenu;
+  }
+
+  closeMobileMenu(): void {
+    this.showMobileMenu = false;
+  }
 
 }
