@@ -97,7 +97,6 @@
       }
     }
   },
-  "defaultProject": "casanare-devs-web",
   "cli": {
     "analytics": false
   }
