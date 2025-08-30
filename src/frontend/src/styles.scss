@@ -1,63 +1,58 @@
-@import "./assets/theming.scss";
+/* Angular Material core styles - @use debe ir primero */
+@use "@angular/material" as mat;
 
-.theme-dark .mat-mdc-card:not([class*="mat-elevation-z"]),
-.mat-mdc-card:not([class*="mat-elevation-z"]) {
-  box-shadow: 0px 3px 1px 0px rgba(51, 102, 204, 0.2),
-    0px -1px 1px 0px rgba(51, 102, 204, 0.08),
-    0px 0px 1px 0px rgba(51, 102, 204, 0.12);
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap");
+@import "https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined";
+
+@include mat.core();
+
+/* Basic theme for Angular Material - using default Material colors */
+$primary: mat.m2-define-palette(mat.$m2-indigo-palette, 900);
+$accent: mat.m2-define-palette(mat.$m2-purple-palette, 800);
+$warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+/* Light theme */
+$light-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  )
+));
+
+/* Dark theme */
+$dark-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  )
+));
+
+/* Apply light theme by default */
+@include mat.all-component-themes($light-theme);
+
+/* Apply dark theme when system prefers dark mode */
+@media (prefers-color-scheme: dark) {
+  @include mat.all-component-colors($dark-theme);
 }
 
-.theme-dark .mat-expansion-panel:not([class*="mat-elevation-z"]),
-.mat-expansion-panel:not([class*="mat-elevation-z"]) {
-  box-shadow: 0px 3px 1px 0px rgba(51, 102, 204, 0.2),
-    0px -1px 1px 0px rgba(51, 102, 204, 0.08),
-    0px 0px 1px 0px rgba(51, 102, 204, 0.12);
+/* Global styles */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Open Sans', system-ui, sans-serif;
 }
 
-.mat-elevation-z4 {
-  box-shadow: 0px 2px 4px -1px rgba(51, 102, 204, 0.2),
-    0px 4px 1px 0px rgba(51, 102, 204, 0.14),
-    0px -1px 2px 0px rgba(51, 102, 204, 0.12);
-}
-
-a:not([class*="mat-mdc-button-base"], [class*="mat-menu-item"]) {
-  color: var(--accent-color);
-  text-decoration: none;
-  overflow-wrap: anywhere;
-
-  &:not([class*="color"]) {
-    color: inherit;
+/* Dark mode background for body */
+@media (prefers-color-scheme: dark) {
+  body {
+    @apply bg-gray-900 text-white;
   }
-}
-
-a:not(
-    [class*="mat-mdc-button-base"],
-    [class*="mat-menu-item"],
-    [class*="no-color"]
-  ):hover {
-  color: var(--accent-darker-color);
-}
-
-.a-link {
-  color: inherit;
-  text-decoration: none;
-  overflow-wrap: anywhere;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }

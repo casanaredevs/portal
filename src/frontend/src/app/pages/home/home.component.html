@@ -1,62 +1,9 @@
-<div class="container py-2">
-  <div class="row">
-    <div class="col-12">
-      <br />
-
-      <h1>Grupo de desarrolladores de Casanare</h1>
-
-      <br />
-
-      <p>
-        Este grupo fue creado con fines comunitarios, apoyarnos, aprender de
-        tecnologías y novedades del ecosistema de transformación digital.
-      </p>
-    </div>
+<div class="w-full px-4 py-2 bg-white dark:bg-gray-900 min-h-screen">
+  <div class="flex flex-wrap max-w-7xl mx-auto">
+    <app-hero-section></app-hero-section>
   </div>
 
-  <div class="row my-4">
-    <div *ngFor="let dev_ of developers" class="col-12 col-md-6 col-lg-3 mb-4">
-      <mat-card class="h-100 rounded-3">
-        <mat-card-content class="h-100">
-          <div class="d-flex">
-            <div class="d-flex justify-content-center w-75">
-              <div #divAvatar class="avatar">
-                <img [src]="dev_.imageUrl" />
-              </div>
-            </div>
-
-            <div
-              class="d-flex flex-grow-1 justify-content-center align-items-center flex-column"
-            >
-              <a
-                *ngFor="let social_ of dev_.socialNetworks"
-                mat-icon-button
-                [href]="social_.url"
-                [matTooltip]="social_.name | titlecase"
-                target="_blank"
-              >
-                <mat-icon [svgIcon]="social_.name"></mat-icon>
-              </a>
-            </div>
-          </div>
-
-          <br />
-
-          <h2 class="text-center mb-1" style="line-height: 1.4rem">
-            {{ dev_.name }} {{ dev_.lastName }}
-          </h2>
-          <p class="text-center">{{ dev_.description }}</p>
-
-          <div class="d-flex justify-content-center flex-wrap">
-            <div *ngFor="let technology_ of dev_.technologies" class="px-1">
-              <mat-icon
-                [svgIcon]="technology_"
-                [matTooltip]="technology_ | titlecase"
-              ></mat-icon>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
+  <div class="max-w-7xl mx-auto">
+    <app-developers-grid [developers]="developers"></app-developers-grid>
   </div>
 </div>

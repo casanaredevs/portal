@@ -1,33 +1,41 @@
-<div class="container px-1 py-2">
-  <div class="row">
-    <div
-      class="col-12 col-lg-7 d-flex align-items-center justify-content-center"
-    >
-      <div class="w-75">
+<div class="w-full min-h-screen bg-gray-900 dark:bg-gray-900 text-white flex flex-col items-center justify-center">
+  <div class="max-w-6xl w-full mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- Imagen de 404 -->
+      <div class="w-full md:w-1/2 flex items-center justify-center">
         <img
           src="assets/images/page_not_found.svg"
-          class="img-fluid"
-          alt="Error"
+          class="w-4/5 md:w-full max-w-md"
+          alt="Error 404"
         />
       </div>
-    </div>
-    <div
-      class="col-12 col-lg-5 d-flex align-items-center justify-content-center py-5"
-    >
-      <div class="w-75 mx-auto mx-md-0 text-center">
-        <img src="/assets/images/logo.svg" class="w-25 mb-3" alt="Logo" />
 
-        <h1>Casanare Devs</h1>
-        <br /><br />
-        <h2>404. <span class="text-medium"> Página no encontrada </span></h2>
-        <h3>
-          La URL solicitada <b> {{ currentURL }} </b> no fue encontrada, le
-          recomendamos que se dirija a la página de inicio.
-        </h3>
+      <!-- Contenido -->
+      <div class="w-full md:w-1/2 flex flex-col items-center md:items-start justify-center space-y-6">
+        <img src="/assets/images/logo.svg" class="h-16 mb-4" alt="Logo" />
 
-        <br /><br />
+        <h1 class="text-2xl font-bold text-white">Casanare Devs</h1>
 
-        <a mat-flat-button routerLink="/" class="w-100">Ir a Inicio</a>
+        <div class="mt-6">
+          <h2 class="text-3xl font-bold text-white">
+            404. <span class="font-normal">Página no encontrada</span>
+          </h2>
+          <p class="mt-4 text-lg text-gray-300">
+            La URL solicitada
+            <span class="font-semibold"> {{ currentURL }} </span> no fue
+            encontrada, le recomendamos que se dirija a la página de inicio.
+          </p>
+        </div>
+
+        <div class="mt-8">
+          <a
+            mat-flat-button
+            routerLink="/"
+            class="bg-indigo-700 hover:bg-indigo-600 text-white px-6 py-3 rounded transition-colors duration-300 inline-block"
+          >
+            Ir a Inicio
+          </a>
+        </div>
       </div>
     </div>
   </div>

@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { HomeComponent } from './home.component';
+import { DevelopersModule } from '../../features/developers/developers.module';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { HomeComponent } from './home.component';
   imports: [
     CommonModule,
     RouterModule.forChild([{ path: '', component: HomeComponent }]),
+    DevelopersModule,
 
     MatCardModule,
     MatButtonModule,
