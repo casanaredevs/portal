@@ -390,4 +390,35 @@ export const developerList: Developer[] = [
             Technologies.PHP,
         ]
     },
+    {
+        name: 'Arialdo',
+        lastName: 'Riaño Diaz',
+        imageUrl: 'https://avatars.githubusercontent.com/u/139005415?v=4',
+        description: 'Full Stack Developer',
+        socialNetworks: [
+
+            {
+                name: SocialNetworks.LINKED_IN,
+                url: '//linkedin.com/in/arialdo-riaño-diaz'
+            },
+            {
+                name: SocialNetworks.FACEBOOK,
+                url: '//facebook.com/ArialdoRD/'
+            },
+            {
+                name: SocialNetworks.INSTAGRAM,
+                url: '//instagram.com/diaz_arialdo/'
+            },
+            {
+                name: SocialNetworks.GITHUB,
+                url: '//github.com/arialdodev'
+            },
+
+        ],
+        technologies: [
+            Technologies.REACT,
+            Technologies.TYPESCRIPT,
+            Technologies.C_SHARP,
+        ]
+    },
 ]
