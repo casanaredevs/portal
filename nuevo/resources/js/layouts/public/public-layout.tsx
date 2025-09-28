@@ -1,34 +1,44 @@
 import AppLogo from '@/components/app-logo';
+import { publicNavItems, type PublicNavItem } from '@/config/public-nav';
 import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 interface PublicLayoutProps {
     children: ReactNode;
 }
 
-interface NavItem {
-    label: string;
-    href: string;
-    external?: boolean;
-    upcoming?: boolean; // para marcar que aún no existe página
+// Determina si un item está activo basándose en la ruta y hash actual.
+function isItemActive(
+    item: PublicNavItem,
+    currentPath: string,
+    currentHash: string,
+) {
+    if (item.href === '/' && currentPath === '/') return true;
+    if (
+        item.href.startsWith('#') &&
+        currentPath === '/' &&
+        currentHash === item.href
+    )
+        return true;
+    return false;
 }
-
-const navItems: NavItem[] = [
-    { label: 'Inicio', href: '/' },
-    { label: 'Miembros', href: '#miembros', upcoming: true },
-    { label: 'Eventos', href: '#eventos', upcoming: true },
-    { label: 'Proyectos', href: '#proyectos', upcoming: true },
-    { label: 'Sobre', href: '#sobre', upcoming: true },
-    { label: 'FAQ', href: '#faq', upcoming: true },
-    { label: 'Contacto', href: '#contacto', upcoming: true },
-];
 
 export default function PublicLayout({ children }: PublicLayoutProps) {
     const { auth } = usePage<SharedData>().props;
     const isAuth = Boolean(auth?.user);
     const [menuOpen, setMenuOpen] = useState(false);
+    const page = usePage();
+    const [hash, setHash] = useState<string>(
+        typeof window !== 'undefined' ? window.location.hash : '',
+    );
+
+    useEffect(() => {
+        const handler = () => setHash(window.location.hash);
+        window.addEventListener('hashchange', handler);
+        return () => window.removeEventListener('hashchange', handler);
+    }, []);
 
     return (
         <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
@@ -48,22 +58,35 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                     </Link>
                     <nav
                         aria-label="Principal"
-                        className="hidden gap-6 lg:flex"
+                        className="hidden gap-1 lg:flex"
                     >
-                        {navItems.map((item) => (
-                            <Link
-                                key={item.label}
-                                href={item.href}
-                                className="relative text-sm text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100"
-                            >
-                                {item.label}
-                                {item.upcoming && (
-                                    <span className="ml-1 rounded bg-neutral-200 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
-                                        pronto
-                                    </span>
-                                )}
-                            </Link>
-                        ))}
+                        {publicNavItems.map((item) => {
+                            const active = isItemActive(item, page.url, hash);
+                            return (
+                                <Link
+                                    key={item.label}
+                                    href={item.href}
+                                    aria-current={active ? 'page' : undefined}
+                                    className={
+                                        `group relative inline-flex items-center rounded-md px-3 py-2 text-sm font-medium transition outline-none ` +
+                                        (active
+                                            ? 'text-neutral-900 dark:text-neutral-50'
+                                            : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100') +
+                                        ' focus-visible:ring-2 focus-visible:ring-fuchsia-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-fuchsia-500 dark:focus-visible:ring-offset-neutral-900'
+                                    }
+                                >
+                                    {item.label}
+                                    {item.upcoming && (
+                                        <span className="ml-1 rounded bg-neutral-200 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+                                            pronto
+                                        </span>
+                                    )}
+                                    {active && (
+                                        <span className="pointer-events-none absolute inset-x-2 -bottom-0.5 h-0.5 rounded-full bg-fuchsia-500 dark:bg-fuchsia-400" />
+                                    )}
+                                </Link>
+                            );
+                        })}
                     </nav>
                     <div className="flex items-center gap-2">
                         {isAuth ? (
@@ -122,24 +145,40 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 {menuOpen && (
                     <div className="border-t border-neutral-200 bg-white px-4 py-4 md:hidden dark:border-neutral-800 dark:bg-neutral-900">
                         <nav
-                            className="flex flex-col gap-3"
+                            className="flex flex-col gap-1"
                             aria-label="Menú móvil"
                         >
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.label}
-                                    href={item.href}
-                                    onClick={() => setMenuOpen(false)}
-                                    className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200"
-                                >
-                                    {item.label}
-                                    {item.upcoming && (
-                                        <span className="rounded bg-neutral-200 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
-                                            pronto
-                                        </span>
-                                    )}
-                                </Link>
-                            ))}
+                            {publicNavItems.map((item) => {
+                                const active = isItemActive(
+                                    item,
+                                    page.url,
+                                    hash,
+                                );
+                                return (
+                                    <Link
+                                        key={item.label}
+                                        href={item.href}
+                                        onClick={() => setMenuOpen(false)}
+                                        aria-current={
+                                            active ? 'page' : undefined
+                                        }
+                                        className={
+                                            `flex items-center gap-2 rounded px-3 py-2 text-sm transition outline-none ` +
+                                            (active
+                                                ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-50'
+                                                : 'text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800') +
+                                            ' focus-visible:ring-2 focus-visible:ring-fuchsia-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-fuchsia-500 dark:focus-visible:ring-offset-neutral-900'
+                                        }
+                                    >
+                                        {item.label}
+                                        {item.upcoming && (
+                                            <span className="rounded bg-neutral-200 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+                                                pronto
+                                            </span>
+                                        )}
+                                    </Link>
+                                );
+                            })}
                         </nav>
                     </div>
                 )}
