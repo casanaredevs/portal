@@ -3,9 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Technology;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Database\Seeders\TopTechnologiesSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,9 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::firstOrCreate(
+        $user = User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
@@ -24,5 +24,13 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        if (!$user->username) {
+            $user->username = $user->generateUsernameSuggestion();
+            $user->save();
+        }
+
+        // Sembrar catálogo ampliado de tecnologías principales
+        $this->call(TopTechnologiesSeeder::class);
     }
 }
