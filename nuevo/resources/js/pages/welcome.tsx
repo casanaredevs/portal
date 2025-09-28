@@ -1,4 +1,5 @@
 import Hero from '@/components/landing/hero';
+import QuickStats from '@/components/landing/quick-stats';
 import PublicLayout from '@/layouts/public/public-layout';
 import { type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
@@ -25,6 +26,7 @@ export default function Welcome() {
                 isAuthenticated={isAuthenticated}
                 userName={auth?.user?.name}
             />
+            <QuickStats />
         </PublicLayout>
     );
 }
