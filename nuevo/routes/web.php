@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\ExternalProfileController;
+use App\Http\Controllers\MembersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicEventController;
 use App\Http\Controllers\PublicMetricsController;
@@ -92,6 +93,9 @@ Route::get('/technologies/catalog', [TechnologyController::class, 'catalog'])->n
 Route::get('/events', [PublicEventController::class,'index'])->name('events.index');
 // Página pública detalle de evento
 Route::get('/events/{event:slug}', [PublicEventController::class,'show'])->name('events.show');
+
+// Miembros (página pública)
+Route::get('/members', [MembersController::class,'index'])->name('members.index');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

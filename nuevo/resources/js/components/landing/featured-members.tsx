@@ -67,10 +67,10 @@ export const FeaturedMembers: React.FC<FeaturedMembersProps> = ({
                     Miembros destacados
                 </h2>
                 <Link
-                    href="#"
+                    href="/members"
                     className="text-xs font-medium text-fuchsia-700 opacity-70 hover:underline hover:opacity-100 dark:text-fuchsia-300"
                 >
-                    Ver todos (pronto)
+                    Ver todos
                 </Link>
             </div>
             {members.length === 0 && (

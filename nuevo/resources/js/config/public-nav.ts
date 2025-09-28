@@ -8,7 +8,7 @@ export interface PublicNavItem {
 // Lista centralizada de navegación pública (Home + futuras páginas)
 export const publicNavItems: PublicNavItem[] = [
     { label: 'Inicio', href: '/' },
-    { label: 'Miembros', href: '#miembros', upcoming: true },
+    { label: 'Miembros', href: '/members' },
     { label: 'Eventos', href: '/events' },
     { label: 'Proyectos', href: '#proyectos', upcoming: true },
     { label: 'Sobre', href: '#sobre', upcoming: true },
