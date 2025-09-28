@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Event;
 use App\Models\User;
-use App\Models\Technology;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Database\Seeders\TopTechnologiesSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -32,5 +30,10 @@ class DatabaseSeeder extends Seeder
 
         // Sembrar catálogo ampliado de tecnologías principales
         $this->call(TopTechnologiesSeeder::class);
+
+        // Sembrar eventos de ejemplo si no existen
+        if (Event::count() === 0) {
+            Event::factory()->count(6)->create();
+        }
     }
 }

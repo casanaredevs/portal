@@ -1,5 +1,6 @@
 import Hero from '@/components/landing/hero';
 import QuickStats from '@/components/landing/quick-stats';
+import UpcomingEvents from '@/components/landing/upcoming-events';
 import { type CommunityMetrics } from '@/hooks/use-community-metrics';
 import PublicLayout from '@/layouts/public/public-layout';
 import { type SharedData } from '@/types';
@@ -7,10 +8,11 @@ import { Head, usePage } from '@inertiajs/react';
 
 interface WelcomePageProps extends SharedData {
     metrics?: CommunityMetrics;
+    upcomingEvents?: any[];
 }
 
 export default function Welcome() {
-    const { auth, metrics } = usePage<WelcomePageProps>().props;
+    const { auth, metrics, upcomingEvents } = usePage<WelcomePageProps>().props;
 
     const isAuthenticated = Boolean(auth?.user);
 
@@ -32,6 +34,7 @@ export default function Welcome() {
                 userName={auth?.user?.name}
             />
             <QuickStats initial={metrics as any} />
+            <UpcomingEvents initial={(upcomingEvents as any[]) || []} />
         </PublicLayout>
     );
 }

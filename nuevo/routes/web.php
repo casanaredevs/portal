@@ -7,6 +7,7 @@ use App\Http\Controllers\SkillController;
 use App\Http\Controllers\ExternalProfileController;
 use App\Http\Controllers\TechnologyController;
 use App\Http\Controllers\PublicMetricsController;
+use App\Http\Controllers\PublicEventController;
 use Illuminate\Support\Facades\Cache;
 use App\Models\User;
 use App\Models\Technology;
@@ -16,12 +17,24 @@ Route::get('/', function () {
         return [
             'members' => User::count(),
             'technologies' => Technology::count(),
-            'projects' => 0, // TODO: actualizar cuando exista modelo Project
-            'events' => 0,   // TODO: actualizar cuando exista modelo Event
+            'projects' => 0,
+            'events' => 0,
             'updated_at' => now()->toIso8601String(),
         ];
     });
-    return Inertia::render('welcome', [ 'metrics' => $metrics ]);
+    $events = \App\Models\Event::upcoming()->limit(4)->get(['id','title','slug','type','start_at','capacity','seats_taken','summary']);
+    $eventsPayload = $events->map(fn($e) => [
+        'id' => $e->id,
+        'title' => $e->title,
+        'slug' => $e->slug,
+        'type' => $e->type,
+        'start_at' => $e->start_at->toIso8601String(),
+        'capacity' => $e->capacity,
+        'seats_taken' => $e->seats_taken,
+        'seats_remaining' => $e->seats_remaining,
+        'summary' => $e->summary,
+    ]);
+    return Inertia::render('welcome', [ 'metrics' => $metrics, 'upcomingEvents' => $eventsPayload ]);
 })->name('home');
 
 Route::get('/u/{username}', [ProfileController::class, 'show'])->name('profile.show');
@@ -56,8 +69,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/external-profiles/reorder', [ExternalProfileController::class, 'reorder'])->name('external-profiles.reorder');
 });
 
-// Ruta JSON pública para métricas
+// Rutas JSON públicas
 Route::get('/public/metrics', PublicMetricsController::class)->name('public.metrics');
+Route::get('/public/events/upcoming', [PublicEventController::class,'upcoming'])->name('public.events.upcoming');
+
+// Página pública detalle de evento
+Route::get('/events/{event:slug}', [PublicEventController::class,'show'])->name('events.show');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
