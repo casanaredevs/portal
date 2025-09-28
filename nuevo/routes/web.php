@@ -6,9 +6,22 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\ExternalProfileController;
 use App\Http\Controllers\TechnologyController;
+use App\Http\Controllers\PublicMetricsController;
+use Illuminate\Support\Facades\Cache;
+use App\Models\User;
+use App\Models\Technology;
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    $metrics = Cache::remember('public.metrics', 300, function () {
+        return [
+            'members' => User::count(),
+            'technologies' => Technology::count(),
+            'projects' => 0, // TODO: actualizar cuando exista modelo Project
+            'events' => 0,   // TODO: actualizar cuando exista modelo Event
+            'updated_at' => now()->toIso8601String(),
+        ];
+    });
+    return Inertia::render('welcome', [ 'metrics' => $metrics ]);
 })->name('home');
 
 Route::get('/u/{username}', [ProfileController::class, 'show'])->name('profile.show');
@@ -42,6 +55,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/external-profiles/{id}', [ExternalProfileController::class, 'destroy'])->name('external-profiles.destroy');
     Route::post('/external-profiles/reorder', [ExternalProfileController::class, 'reorder'])->name('external-profiles.reorder');
 });
+
+// Ruta JSON pública para métricas
+Route::get('/public/metrics', PublicMetricsController::class)->name('public.metrics');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

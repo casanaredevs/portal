@@ -1,46 +1,88 @@
-export interface CommunityMetrics {
-    members: number; // miembros activos / con perfil público
-    events: number; // eventos históricos realizados
-    projects: number; // proyectos publicados / visibles
-    technologies: number; // tecnologías representadas (distintas)
-}
+import useCommunityMetrics, {
+    type CommunityMetrics,
+} from '@/hooks/use-community-metrics';
+import { useEffect, useRef } from 'react';
+
+export interface CommunityMetricsInput extends Partial<CommunityMetrics> {}
 
 interface QuickStatsProps {
-    metrics?: Partial<CommunityMetrics>; // futuro: datos dinámicos inyectados
-    loading?: boolean; // futuro: estado de carga (skeleton)
+    initial?: CommunityMetrics; // métricas iniciales (Inertia prop)
     className?: string;
+    autoRefreshMs?: number;
 }
 
-// Valores estáticos MVP (placeholders). Futuro: reemplazar por fetch server-side (Inertia props) o API pública cacheable.
-const STATIC_BASE: CommunityMetrics = {
-    members: 128,
-    events: 34,
-    projects: 9,
-    technologies: 56,
-};
+// Hook de animación numérica (count-up)
+function useCountUp(value: number, previous: number | null, duration = 900) {
+    const ref = useRef<HTMLSpanElement | null>(null);
+    const startVal = previous ?? value;
+    useEffect(() => {
+        if (!ref.current) return;
+        if (startVal === value) {
+            ref.current.textContent = formatNumber(value);
+            return;
+        }
+        const el = ref.current;
+        const start = performance.now();
+        const diff = value - startVal;
+        let frame: number;
+        const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+        const step = (ts: number) => {
+            const progress = Math.min(1, (ts - start) / duration);
+            const eased = easeOutCubic(progress);
+            const current = startVal + diff * eased;
+            el.textContent = formatNumber(current);
+            if (progress < 1) frame = requestAnimationFrame(step);
+        };
+        frame = requestAnimationFrame(step);
+        return () => cancelAnimationFrame(frame);
+    }, [value, startVal, duration]);
+    return ref;
+}
+
+function formatNumber(n: number | string) {
+    const num = typeof n === 'string' ? parseFloat(n) : n;
+    if (!isFinite(num)) return '0';
+    // Formato compacto a partir de 1000
+    if (num >= 1000) {
+        return Intl.NumberFormat('es', {
+            notation: 'compact',
+            maximumFractionDigits: 1,
+        }).format(Math.round(num));
+    }
+    return Math.round(num).toString();
+}
 
 export function QuickStats({
-    metrics,
-    loading = false,
+    initial,
     className = '',
+    autoRefreshMs,
 }: QuickStatsProps) {
-    const data = { ...STATIC_BASE, ...metrics } as CommunityMetrics;
+    // Fallback estático si no se provee initial
+    const staticFallback: CommunityMetrics = initial || {
+        members: 128,
+        events: 34,
+        projects: 9,
+        technologies: 56,
+        updated_at: undefined,
+    };
+
+    const { metrics, previousMetrics, refreshing } = useCommunityMetrics(
+        staticFallback,
+        {
+            intervalMs: autoRefreshMs ?? 60_000,
+            enabled: true,
+        },
+    );
 
     const items: {
         key: keyof CommunityMetrics;
         label: string;
-        value: number;
         suffix?: string;
     }[] = [
-        { key: 'members', label: 'Miembros', value: data.members, suffix: '+' },
-        { key: 'events', label: 'Eventos', value: data.events },
-        { key: 'projects', label: 'Proyectos', value: data.projects },
-        {
-            key: 'technologies',
-            label: 'Tecnologías',
-            value: data.technologies,
-            suffix: '+',
-        },
+        { key: 'members', label: 'Miembros', suffix: '+' },
+        { key: 'events', label: 'Eventos' },
+        { key: 'projects', label: 'Proyectos' },
+        { key: 'technologies', label: 'Tecnologías', suffix: '+' },
     ];
 
     return (
@@ -60,34 +102,54 @@ export function QuickStats({
                     <div className="absolute right-0 bottom-0 h-40 w-40 rounded-full bg-amber-300 blur-2xl dark:bg-amber-500" />
                 </div>
                 <dl className="relative grid grid-cols-2 gap-6 sm:grid-cols-4">
-                    {items.map((item) => (
-                        <div key={item.key} className="flex flex-col gap-1">
-                            <dt className="text-xs font-medium tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
-                                {item.label}
-                            </dt>
-                            <dd
-                                className={
-                                    'text-3xl font-extrabold tracking-tight text-neutral-900 tabular-nums dark:text-neutral-50 ' +
-                                    (loading ? 'animate-pulse' : '')
-                                }
-                                aria-live="polite"
-                            >
-                                {loading ? (
-                                    <span className="inline-block h-7 w-16 rounded bg-neutral-200 dark:bg-neutral-700" />
-                                ) : (
-                                    <>
-                                        {item.value}
-                                        {item.suffix}
-                                    </>
-                                )}
-                            </dd>
-                        </div>
-                    ))}
+                    {items.map((item) => {
+                        const current = metrics[item.key] as number;
+                        const prev = previousMetrics
+                            ? (previousMetrics[item.key] as number)
+                            : null;
+                        const ref = useCountUp(current, prev);
+                        return (
+                            <div key={item.key} className="flex flex-col gap-1">
+                                <dt className="text-xs font-medium tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
+                                    {item.label}
+                                </dt>
+                                <dd
+                                    className="text-3xl font-extrabold tracking-tight text-neutral-900 tabular-nums dark:text-neutral-50"
+                                    aria-live="off"
+                                >
+                                    <span ref={ref} aria-hidden="true" />
+                                    {item.suffix && (
+                                        <span aria-hidden="true">
+                                            {item.suffix}
+                                        </span>
+                                    )}
+                                    <span className="sr-only">
+                                        {current}
+                                        {item.suffix || ''}
+                                    </span>
+                                </dd>
+                            </div>
+                        );
+                    })}
                 </dl>
-                <p className="mt-5 text-[11px] text-neutral-500 dark:text-neutral-400">
-                    Cifras aproximadas – pronto se actualizarán en tiempo casi
-                    real.
-                </p>
+                <div className="mt-5 flex flex-wrap items-center gap-3 text-[11px] text-neutral-500 dark:text-neutral-400">
+                    <span>Cifras aproximadas – actualización automática.</span>
+                    {refreshing && (
+                        <span className="inline-flex items-center gap-1 text-fuchsia-600 dark:text-fuchsia-400">
+                            <span className="h-1.5 w-1.5 animate-ping rounded-full bg-current" />
+                            Refrescando…
+                        </span>
+                    )}
+                    {metrics.updated_at && (
+                        <time dateTime={metrics.updated_at}>
+                            Última:{' '}
+                            {new Date(metrics.updated_at).toLocaleTimeString(
+                                'es-CO',
+                                { hour: '2-digit', minute: '2-digit' },
+                            )}
+                        </time>
+                    )}
+                </div>
             </div>
         </section>
     );

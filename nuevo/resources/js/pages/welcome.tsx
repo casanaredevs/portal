@@ -1,11 +1,16 @@
 import Hero from '@/components/landing/hero';
 import QuickStats from '@/components/landing/quick-stats';
+import { type CommunityMetrics } from '@/hooks/use-community-metrics';
 import PublicLayout from '@/layouts/public/public-layout';
 import { type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 
+interface WelcomePageProps extends SharedData {
+    metrics?: CommunityMetrics;
+}
+
 export default function Welcome() {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, metrics } = usePage<WelcomePageProps>().props;
 
     const isAuthenticated = Boolean(auth?.user);
 
@@ -26,7 +31,7 @@ export default function Welcome() {
                 isAuthenticated={isAuthenticated}
                 userName={auth?.user?.name}
             />
-            <QuickStats />
+            <QuickStats initial={metrics as any} />
         </PublicLayout>
     );
 }
