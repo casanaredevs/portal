@@ -56,6 +56,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'availability' => 'array',
             'privacy' => 'array',
+            'is_featured' => 'boolean',
         ];
     }
 
@@ -172,5 +173,10 @@ class User extends Authenticatable
                 'position' => $p->position,
             ])->all(),
         ];
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
     }
 }

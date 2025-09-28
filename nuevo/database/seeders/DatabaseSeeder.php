@@ -35,5 +35,10 @@ class DatabaseSeeder extends Seeder
         if (Event::count() === 0) {
             Event::factory()->count(6)->create();
         }
+
+        // Marcar algunos usuarios como destacados si no hay ninguno
+        if (\App\Models\User::where('is_featured', true)->count() === 0) {
+            \App\Models\User::query()->inRandomOrder()->limit(5)->update(['is_featured' => true]);
+        }
     }
 }

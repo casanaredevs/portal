@@ -43,7 +43,42 @@ Route::get('/', function () {
         'summary' => $e->summary,
         'is_registered' => in_array($e->id,$registeredIds),
     ]);
-    return Inertia::render('welcome', [ 'metrics' => $metrics, 'upcomingEvents' => $eventsPayload ]);
+
+    // Featured members (max 6)
+    $featured = User::featured()
+        ->with(['skills' => fn($q)=> $q->public()->with('technology')->orderBy('position')])
+        ->limit(6)
+        ->get();
+    if ($featured->count() < 6) {
+        $needed = 6 - $featured->count();
+        $additional = User::whereNotIn('id', $featured->pluck('id'))
+            ->withCount(['skills as public_skills_count' => fn($q)=> $q->public()])
+            ->orderByDesc('public_skills_count')
+            ->inRandomOrder()
+            ->limit($needed)
+            ->with(['skills' => fn($q)=> $q->public()->with('technology')->orderBy('position')])
+            ->get();
+        $featured = $featured->concat($additional);
+    }
+    $featuredPayload = $featured->map(fn($u) => [
+        'id' => $u->id,
+        'display_name' => $u->display_name,
+        'username' => $u->username,
+        'bio' => $u->bio ? str($u->bio)->limit(100)->value() : null,
+        'technologies' => $u->skills->take(5)->map(fn($s) => [
+            'id' => $s->technology->id,
+            'name' => $s->technology->name,
+            'slug' => $s->technology->slug,
+            'icon' => $s->technology->icon,
+        ])->unique('id')->values()->all(),
+        'is_featured' => (bool)($u->is_featured ?? false),
+    ]);
+
+    return Inertia::render('welcome', [
+        'metrics' => $metrics,
+        'upcomingEvents' => $eventsPayload,
+        'featuredMembers' => $featuredPayload,
+    ]);
 })->name('home');
 
 Route::get('/u/{username}', [ProfileController::class, 'show'])->name('profile.show');
