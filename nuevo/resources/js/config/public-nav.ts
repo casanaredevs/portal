@@ -9,7 +9,7 @@ export interface PublicNavItem {
 export const publicNavItems: PublicNavItem[] = [
     { label: 'Inicio', href: '/' },
     { label: 'Miembros', href: '#miembros', upcoming: true },
-    { label: 'Eventos', href: '#eventos', upcoming: true },
+    { label: 'Eventos', href: '/events' },
     { label: 'Proyectos', href: '#proyectos', upcoming: true },
     { label: 'Sobre', href: '#sobre', upcoming: true },
     { label: 'FAQ', href: '#faq', upcoming: true },

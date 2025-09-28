@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Technology;
+use App\Models\Event;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 
@@ -15,12 +16,10 @@ class PublicMetricsController extends Controller
     public function __invoke(): JsonResponse
     {
         $data = Cache::remember('public.metrics', 300, function () {
-            // Placeholder counts (projects & events pending future models)
             $members = User::count();
             $technologies = Technology::count();
             $projects = 0; // TODO: replace when Project model exists
-            $events = 0;   // TODO: replace when Event model exists
-
+            $events = Event::where('status','published')->count();
             return [
                 'members' => $members,
                 'technologies' => $technologies,
@@ -35,4 +34,3 @@ class PublicMetricsController extends Controller
             ->header('Cache-Control', 'public, max-age=120, s-maxage=300');
     }
 }
-

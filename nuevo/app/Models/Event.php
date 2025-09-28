@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class Event extends Model
 {
@@ -34,6 +35,14 @@ class Event extends Model
                 $event->slug = $slug;
             }
         });
+
+        $forgetCaches = function () {
+            Cache::forget('public.metrics');
+            Cache::forget('public.events.upcoming');
+        };
+
+        static::saved($forgetCaches);
+        static::deleted($forgetCaches);
     }
 
     public function getSeatsRemainingAttribute(): ?int
@@ -48,5 +57,9 @@ class Event extends Model
             ->where('start_at','>=', now())
             ->orderBy('start_at');
     }
-}
 
+    public function registrations()
+    {
+        return $this->hasMany(EventRegistration::class);
+    }
+}
