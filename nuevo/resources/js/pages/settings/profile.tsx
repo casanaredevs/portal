@@ -185,6 +185,31 @@ export default function Profile({
                                         message={form.errors.username as any}
                                     />
                                 </div>
+                                <div className="flex flex-col gap-1">
+                                    <Label htmlFor="avatar_url">
+                                        Avatar URL
+                                    </Label>
+                                    <Input
+                                        id="avatar_url"
+                                        name="avatar_url"
+                                        value={
+                                            (form.data as any).avatar_url || ''
+                                        }
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'avatar_url',
+                                                e.target.value,
+                                            )
+                                        }
+                                        placeholder="https://..."
+                                    />
+                                    <InputError
+                                        className="mt-1"
+                                        message={
+                                            (form.errors as any).avatar_url
+                                        }
+                                    />
+                                </div>
                                 <div className="col-span-full flex flex-col gap-1">
                                     <Label htmlFor="bio">Bio (≤280)</Label>
                                     <textarea

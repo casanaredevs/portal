@@ -64,6 +64,7 @@ Route::get('/', function () {
         'id' => $u->id,
         'display_name' => $u->display_name,
         'username' => $u->username,
+        'avatar_url' => $u->avatar_url,
         'bio' => $u->bio ? str($u->bio)->limit(100)->value() : null,
         'technologies' => $u->skills->take(5)->map(fn($s) => [
             'id' => $s->technology->id,

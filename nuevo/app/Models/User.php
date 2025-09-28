@@ -32,6 +32,7 @@ class User extends Authenticatable
         'location_country',
         'availability',
         'privacy',
+        'avatar_url', // nuevo campo
     ];
 
     /**
@@ -145,6 +146,7 @@ class User extends Authenticatable
             'username' => $this->username,
             'display_name' => $this->display_name,
             'name' => $this->name,
+            'avatar_url' => $this->avatar_url,
             'bio' => $visibility('bio') ? $this->bio : null,
             'about' => $visibility('about') ? $this->about : null,
             'location_city' => $visibility('location') ? $this->location_city : null,

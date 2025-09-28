@@ -56,6 +56,8 @@ class ProfileUpdateRequest extends FormRequest
             'privacy.about' => ['sometimes', Rule::in(['public', 'members', 'private'])],
 
             'privacy.location' => ['sometimes', Rule::in(['public', 'members', 'private'])],
+
+            'avatar_url' => ['nullable', 'string', 'max:512', 'url'],
         ];
     }
 
