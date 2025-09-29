@@ -41,7 +41,31 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-progress --no-scripts --prefer-dist --optimize-autoloader
 
 # ------------------------------------------------------------
-# Stage 3: Assets (Node / Vite + Inertia)
+# Stage 3: Generación de tipos Wayfinder (antes del build de assets)
+# ------------------------------------------------------------
+FROM php-base AS wayfinder
+WORKDIR /var/www/html
+# Copiamos sólo lo necesario para que artisan cargue rutas y controladores
+COPY composer.json composer.lock artisan .env.example ./
+COPY routes ./routes
+COPY app ./app
+COPY config ./config
+COPY bootstrap ./bootstrap
+# Dependencias
+COPY --from=vendor /var/www/html/vendor ./vendor
+# Creamos estructura base
+RUN mkdir -p resources/js
+# Generamos tipos (garantizando APP_KEY y descubriendo paquetes). Creamos directorios vacíos si no se generan.
+RUN set -eux; \
+    if [ ! -f .env ] && [ -f .env.example ]; then cp .env.example .env; fi; \
+    if ! grep -q '^APP_KEY=' .env; then echo 'APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=' >> .env; fi; \
+    php artisan package:discover --ansi || echo "[build] WARN: package:discover falló"; \
+    php artisan wayfinder:generate --ansi || echo "[build] WARN: wayfinder:generate falló (continuando)"; \
+    mkdir -p resources/js/routes resources/js/actions resources/js/wayfinder; \
+    touch resources/js/routes/.keep resources/js/actions/.keep resources/js/wayfinder/.keep
+
+# ------------------------------------------------------------
+# Stage 4: Assets (Node / Vite + Inertia)
 # ------------------------------------------------------------
 FROM node:20-alpine AS assets
 WORKDIR /app
@@ -51,11 +75,16 @@ COPY vite.config.ts tsconfig.json ./
 COPY components.json* ./
 COPY resources ./resources
 COPY public ./public
+# Copiamos los tipos generados de Wayfinder (routes, actions, wayfinder)
+COPY --from=wayfinder /var/www/html/resources/js/routes ./resources/js/routes
+COPY --from=wayfinder /var/www/html/resources/js/actions ./resources/js/actions
+COPY --from=wayfinder /var/www/html/resources/js/wayfinder ./resources/js/wayfinder
+# Desactivamos el plugin en runtime de build (evita intentar regenerar sin PHP)
 ENV BUILD_WAYFINDER_TYPES=0
 RUN npm run build
 
 # ------------------------------------------------------------
-# Stage 4: Runtime final (PHP-FPM + Nginx)
+# Stage 5: Runtime final (PHP-FPM + Nginx)
 # ------------------------------------------------------------
 FROM php-base AS runtime
 
