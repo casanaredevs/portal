@@ -2,6 +2,10 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "permissions:export": "php artisan permissions:export",
+        "predev": "php artisan permissions:export",
+        "prebuild": "php artisan permissions:export",
+        "prebuild:ssr": "php artisan permissions:export",
         "build": "vite build",
         "build:ssr": "vite build && vite build --ssr",
         "dev": "vite",
