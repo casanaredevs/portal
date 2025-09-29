@@ -11,7 +11,7 @@ export const publicNavItems: PublicNavItem[] = [
     { label: 'Miembros', href: '/members' },
     { label: 'Eventos', href: '/events' },
     { label: 'Proyectos', href: '#proyectos', upcoming: true },
-    { label: 'Sobre', href: '#sobre', upcoming: true },
+    { label: 'Sobre', href: '/about' },
     { label: 'FAQ', href: '#faq', upcoming: true },
     { label: 'Contacto', href: '#contacto', upcoming: true },
 ];
