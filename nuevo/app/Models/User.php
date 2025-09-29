@@ -9,11 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Schema;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles; // añadido HasRoles
 
     /**
      * The attributes that are mass assignable.
@@ -180,5 +182,21 @@ class User extends Authenticatable
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (self $user) {
+            // Asignar rol por defecto 'member' sólo si tabla de roles existe y aún no tiene roles.
+            try {
+                if (Schema::hasTable('roles') && $user->roles()->count() === 0) {
+                    if (\Spatie\Permission\Models\Role::where('name', 'member')->exists()) {
+                        $user->assignRole('member');
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Silenciar en caso de migraciones incompletas durante tests iniciales.
+            }
+        });
     }
 }

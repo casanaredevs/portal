@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -51,5 +52,41 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->afterCreating(function ($user) {
+            try {
+                if (Role::where('name', 'admin')->exists()) {
+                    $user->assignRole('admin');
+                }
+            } catch (\Throwable $e) {}
+        });
+    }
+
+    public function moderator(): static
+    {
+        return $this->afterCreating(function ($user) {
+            try {
+                if (Role::where('name', 'moderator')->exists()) {
+                    $user->assignRole('moderator');
+                }
+            } catch (\Throwable $e) {}
+        });
+    }
+
+    public function member(): static
+    {
+        return $this->afterCreating(function ($user) {
+            try {
+                if (Role::where('name', 'member')->exists()) {
+                    // booted ya asigna member; redundante pero idempotente
+                    if (!$user->hasRole('member')) {
+                        $user->assignRole('member');
+                    }
+                }
+            } catch (\Throwable $e) {}
+        });
     }
 }
