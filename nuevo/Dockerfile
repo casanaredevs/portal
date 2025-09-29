@@ -1,152 +1,201 @@
 # ------------------------------------------------------------
-# Etapa 1: Dependencias PHP (Composer) - misma versión PHP que runtime
+# Stage 1: PHP base (FPM) con extensiones requeridas (sin SQLite)
 # ------------------------------------------------------------
-FROM composer:2.7 AS vendor
-WORKDIR /app
+FROM php:8.4-fpm-alpine AS php-base
 
-# Copiamos definición de dependencias primero para aprovechar cache
-COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev \
-    --no-progress \
-    --no-interaction \
-    --prefer-dist \
-    --no-scripts \
-    --optimize-autoloader
-
-# ------------------------------------------------------------
-# Etapa 2: Build de assets (Node / Vite)
-# ------------------------------------------------------------
-FROM node:20-bookworm-slim AS assets
-WORKDIR /app
-
-# Copiamos manifests de dependencias JS
-COPY package.json package-lock.json* ./
-
-# Instalación determinística si existe lockfile
-RUN if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
-
-# Archivos de configuración y fuentes necesarias para build
-COPY vite.config.ts tsconfig.json ./
-COPY components.json* ./
-COPY resources ./resources
-COPY public ./public
-
-# Desactivar generación de tipos Wayfinder (evita ejecutar php artisan en build)
-ENV BUILD_WAYFINDER_TYPES=0
-
-# Build de assets de producción
-RUN npm run build
-
-# ------------------------------------------------------------
-# Etapa 3: Runtime (Apache + PHP 8.2)
-# ------------------------------------------------------------
-FROM php:8.2-apache-bookworm AS runtime
-
-ENV APP_ENV=production \
-    APP_DEBUG=false \
-    LOG_CHANNEL=stderr \
-    PHP_MEMORY_LIMIT=512M \
+ENV PHP_MEMORY_LIMIT=512M \
     PHP_OPCACHE_VALIDATE_TIMESTAMPS=0 \
     PHP_OPCACHE_MAX_ACCELERATED_FILES=20000 \
+    APP_ENV=production \
+    APP_DEBUG=false \
     OPTIMIZE_ON_STARTUP=true
 
-# Paquetes del sistema y extensiones PHP requeridas por Laravel.
-# Notas:
-#  - mbstring es requerida (server requirements Laravel).
-#  - pdo_sqlite se incluye para tests / uso ligero; eliminarlo si sólo usas MySQL y así evitar libs sqlite.
-#  - Si eliminas pdo_sqlite puedes quitar libsqlite3-dev sqlite3.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        git unzip curl libzip-dev libicu-dev libpq-dev libonig-dev libxml2-dev \
-        sqlite3 libsqlite3-dev pkg-config \
-    && docker-php-ext-install intl zip pdo_mysql pdo_sqlite bcmath mbstring \
-    && a2enmod rewrite headers \
-    && rm -rf /var/lib/apt/lists/*
-
-# Opcache recomendado (docs Laravel: activar en prod)
-RUN { \
+RUN set -eux; \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev oniguruma-dev libpq-dev curl-dev; \
+    apk add --no-cache git unzip bash icu-libs libzip oniguruma libpq curl nginx curl; \
+    docker-php-ext-configure intl; \
+    docker-php-ext-install -j"$(nproc)" intl zip pdo_mysql pdo_pgsql bcmath mbstring opcache; \
+    { \
       echo 'opcache.enable=1'; \
       echo 'opcache.enable_cli=1'; \
       echo 'opcache.memory_consumption=256'; \
       echo 'opcache.interned_strings_buffer=16'; \
-      echo 'opcache.max_accelerated_files=20000'; \
-      echo 'opcache.validate_timestamps=${PHP_OPCACHE_VALIDATE_TIMESTAMPS}'; \
+      echo 'opcache.max_accelerated_files='${PHP_OPCACHE_MAX_ACCELERATED_FILES}; \
+      echo 'opcache.validate_timestamps='${PHP_OPCACHE_VALIDATE_TIMESTAMPS}; \
       echo 'opcache.save_comments=1'; \
       echo 'opcache.fast_shutdown=1'; \
-    } > /usr/local/etc/php/conf.d/opcache-recommended.ini \
-    && echo 'memory_limit=${PHP_MEMORY_LIMIT}' > /usr/local/etc/php/conf.d/memory-limit.ini
+    } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
+    echo 'memory_limit='${PHP_MEMORY_LIMIT} > /usr/local/etc/php/conf.d/memory-limit.ini; \
+    apk del .build-deps; \
+    rm -rf /tmp/* /var/cache/apk/*
 
 WORKDIR /var/www/html
 
-# Copiamos el código fuente
+# ------------------------------------------------------------
+# Stage 2: Vendor (Composer install sin dev)
+# ------------------------------------------------------------
+FROM php-base AS vendor
+ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1
+RUN set -eux; php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; php composer-setup.php --install-dir=/usr/local/bin --filename=composer; rm composer-setup.php
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-progress --no-scripts --prefer-dist --optimize-autoloader
+
+# ------------------------------------------------------------
+# Stage 3: Assets (Node / Vite + Inertia)
+# ------------------------------------------------------------
+FROM node:20-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
+COPY vite.config.ts tsconfig.json ./
+COPY components.json* ./
+COPY resources ./resources
+COPY public ./public
+ENV BUILD_WAYFINDER_TYPES=0
+RUN npm run build
+
+# ------------------------------------------------------------
+# Stage 4: Runtime final (PHP-FPM + Nginx)
+# ------------------------------------------------------------
+FROM php-base AS runtime
+
+# Crear usuario no root
+RUN set -eux; addgroup -g 1000 -S www || true; adduser -S -D -H -u 1000 -G www www || true
+
+# nginx.conf completo con bloque http que incluye conf.d
+COPY <<'NGINXMAIN' /etc/nginx/nginx.conf
+user  www;  # Usuario definido
+worker_processes auto;
+
+error_log  /var/log/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+    client_max_body_size 25M;
+
+    # Logs (puedes redirigir a stdout/stderr)
+    access_log /dev/stdout;
+    error_log  /dev/stderr warn;
+
+    include /etc/nginx/conf.d/*.conf;
+}
+NGINXMAIN
+
+# Server block aislado
+COPY <<'SERVERCONF' /etc/nginx/conf.d/app.conf
+server {
+    listen 80 default_server;
+    server_name _;
+    root /var/www/html/public;
+    index index.php index.html;
+
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-Content-Type-Options nosniff;
+
+    location /favicon.ico { try_files $uri /favicon.ico =204; }
+    location /robots.txt  { try_files $uri /robots.txt  =404; }
+
+    location /storage/ {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        fastcgi_read_timeout 60s;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~* \.(?:css|js|mjs|jpg|jpeg|png|gif|svg|webp|ico|woff2?)$ {
+        try_files $uri /index.php?$query_string;
+        expires 7d;
+        access_log off;
+    }
+}
+SERVERCONF
+
+# Copiar código fuente y artefactos
 COPY . ./
-
-# Aseguramos que no arrastramos caches generados con dependencias dev
 RUN rm -f bootstrap/cache/*.php || true
-
-COPY --from=vendor /app/vendor ./vendor
-COPY --from=vendor /app/composer.lock ./composer.lock
+COPY --from=vendor /var/www/html/vendor ./vendor
+COPY --from=vendor /var/www/html/composer.lock ./composer.lock
 COPY --from=assets /app/public/build ./public/build
 
-# Permisos (storage, cache y opcionalmente base de datos sqlite local)
-RUN chown -R www-data:www-data storage bootstrap/cache database \
+# Permisos
+RUN chown -R www:www storage bootstrap/cache database public \
     && find storage -type d -exec chmod 775 {} \; \
     && find storage -type f -exec chmod 664 {} \; \
     && chmod -R 775 bootstrap/cache \
     && if [ -f database/database.sqlite ]; then chmod 664 database/database.sqlite; fi
 
-# Entrypoint: tareas de descubrimiento y optimización condicional
-COPY <<'EOF' /usr/local/bin/docker-entrypoint.sh
+# Ajustes php-fpm
+RUN sed -i 's/^;clear_env = no/clear_env = no/' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/^user = www-data/user = www/' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/^group = www-data/group = www/' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/^;pm.max_children = 5/pm.max_children = 20/' /usr/local/etc/php-fpm.d/www.conf || true
+
+# Entrypoint
+COPY <<'ENTRYPOINT' /usr/local/bin/docker-entrypoint.sh
 #!/usr/bin/env bash
 set -e
+cd /var/www/html
 
-# Creamos .env temporal si no existe para permitir artisan en contenedores efímeros
 if [ ! -f .env ] && [ -f .env.example ]; then
   cp .env.example .env
 fi
 
-# Siempre regeneramos manifests para evitar referencias a dev providers
 rm -f bootstrap/cache/packages.php bootstrap/cache/services.php 2>/dev/null || true
-php artisan package:discover --ansi || echo "[entrypoint] Advertencia: package:discover falló (continuando)."
+php artisan package:discover --ansi || echo "[entrypoint] WARN: package:discover falló (continuando)"
 
-# Ejecutar migraciones si se solicita explícitamente
-if [ "${RUN_MIGRATIONS}" = "true" ]; then
-  echo "[entrypoint] migrate --force"
-  php artisan migrate --force || echo "[entrypoint] Migraciones fallaron (continuando)."
-fi
-
-# Enlazar storage (idempotente)
 if [ ! -L public/storage ]; then
   php artisan storage:link 2>/dev/null || true
 fi
 
-# Avisar si falta APP_KEY
 if ! grep -q '^APP_KEY=' .env 2>/dev/null && [ -z "${APP_KEY}" ]; then
   echo "[entrypoint] ADVERTENCIA: Falta APP_KEY. Genera una con: docker exec -it $HOSTNAME php artisan key:generate"
 fi
 
-# Optimización en arranque (se puede desactivar con OPTIMIZE_ON_STARTUP=false)
+if [ "${RUN_MIGRATIONS}" = "true" ]; then
+  echo "[entrypoint] Ejecutando migraciones"
+  php artisan migrate --force || echo "[entrypoint] WARN: migraciones fallaron"
+fi
+
 if [ "${OPTIMIZE_ON_STARTUP}" = "true" ]; then
-  echo "[entrypoint] Optimización de caches (config, route, view, event)"
+  echo "[entrypoint] Cacheando config/rutas/vistas/eventos"
   php artisan config:cache --ansi || true
   php artisan route:cache --ansi || true
   php artisan view:cache --ansi || true
   php artisan event:cache --ansi || true
 fi
 
-exec apache2-foreground
-EOF
+php-fpm -D
+exec nginx -g 'daemon off;'
+ENTRYPOINT
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -fsS http://localhost/ || exit 1
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -fsS http://localhost/ || exit 1
-
-EXPOSE 80
-
-# USO RÁPIDO:
-# docker build -t casanare-portal .
+# USO:
+# docker build -t casanare-portal:php84-fpm .
 # docker run -d --name portal -p 8080:80 \
-#   -e APP_KEY=base64:XXXXXXXXXXXXXXX= \
-#   -e APP_URL=http://localhost:8080 \
-#   casanare-portal
+#   -e APP_KEY=base64:XXXX...= \
+#   -e APP_URL=https://tu-dominio \
+#   casanare-portal:php84-fpm
