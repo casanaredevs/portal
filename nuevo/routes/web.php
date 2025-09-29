@@ -100,6 +100,9 @@ Route::get('/members', [MembersController::class,'index'])->name('members.index'
 // Página About (pública)
 Route::get('/about', function() { return Inertia::render('about/index'); })->name('about');
 
+// Página FAQ (pública)
+Route::get('/faq', function() { return Inertia::render('faq/index'); })->name('faq');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');

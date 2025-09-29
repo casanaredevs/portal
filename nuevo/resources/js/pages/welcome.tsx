@@ -1,7 +1,8 @@
+import FaqPreview from '@/components/landing/faq-preview';
 import FeaturedMembers from '@/components/landing/featured-members';
 import Hero from '@/components/landing/hero';
-import MissionVisionGoals from '@/components/landing/mission-vision-goals';
 import JoinParticipate from '@/components/landing/join-participate';
+import MissionVisionGoals from '@/components/landing/mission-vision-goals';
 import QuickStats from '@/components/landing/quick-stats';
 import UpcomingEvents from '@/components/landing/upcoming-events';
 import { type CommunityMetrics } from '@/hooks/use-community-metrics';
@@ -43,6 +44,7 @@ export default function Welcome() {
             <JoinParticipate />
             <FeaturedMembers members={(featuredMembers as any[]) || []} />
             <UpcomingEvents initial={(upcomingEvents as any[]) || []} />
+            <FaqPreview />
         </PublicLayout>
     );
 }

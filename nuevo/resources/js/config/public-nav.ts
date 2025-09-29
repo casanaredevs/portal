@@ -13,6 +13,6 @@ export const publicNavItems: PublicNavItem[] = [
     { label: 'Proyectos', href: '#proyectos', upcoming: true },
     { label: 'Participar', href: '#participar' },
     { label: 'Sobre', href: '/about' },
-    { label: 'FAQ', href: '#faq', upcoming: true },
+    { label: 'FAQ', href: '/faq' },
     { label: 'Contacto', href: '#contacto', upcoming: true },
 ];
