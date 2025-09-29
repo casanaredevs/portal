@@ -8,11 +8,13 @@ ENV PHP_MEMORY_LIMIT=512M \
     PHP_OPCACHE_MAX_ACCELERATED_FILES=20000 \
     APP_ENV=production \
     APP_DEBUG=false \
-    OPTIMIZE_ON_STARTUP=true
+    OPTIMIZE_ON_STARTUP=true \
+    TZ=UTC
 
+# Instalación de dependencias y configuración base
 RUN set -eux; \
     apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev oniguruma-dev libpq-dev curl-dev; \
-    apk add --no-cache git unzip bash icu-libs libzip oniguruma libpq curl nginx curl; \
+    apk add --no-cache git unzip bash icu-libs libzip oniguruma libpq curl nginx tzdata; \
     docker-php-ext-configure intl; \
     docker-php-ext-install -j"$(nproc)" intl zip pdo_mysql pdo_pgsql bcmath mbstring opcache; \
     { \
@@ -26,6 +28,9 @@ RUN set -eux; \
       echo 'opcache.fast_shutdown=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     echo 'memory_limit='${PHP_MEMORY_LIMIT} > /usr/local/etc/php/conf.d/memory-limit.ini; \
+    cp /usr/share/zoneinfo/${TZ} /etc/localtime || true; \
+    echo ${TZ} > /etc/timezone; \
+    echo "date.timezone=${TZ}" > /usr/local/etc/php/conf.d/timezone.ini; \
     apk del .build-deps; \
     rm -rf /tmp/* /var/cache/apk/*
 
@@ -36,7 +41,14 @@ WORKDIR /var/www/html
 # ------------------------------------------------------------
 FROM php-base AS vendor
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1
-RUN set -eux; php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; php composer-setup.php --install-dir=/usr/local/bin --filename=composer; rm composer-setup.php
+# Verificación de firma oficial del instalador de Composer (SHA384)
+RUN set -eux; \
+    EXPECTED_SIGNATURE="$(curl -fsSL https://composer.github.io/installer.sig)"; \
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; \
+    ACTUAL_SIGNATURE="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"; \
+    if [ "${EXPECTED_SIGNATURE}" != "${ACTUAL_SIGNATURE}" ]; then echo >&2 'ERROR: Invalid Composer installer signature'; rm composer-setup.php; exit 1; fi; \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer --quiet; \
+    rm composer-setup.php
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-progress --no-scripts --prefer-dist --optimize-autoloader
 
@@ -133,6 +145,14 @@ server {
     location /favicon.ico { try_files $uri /favicon.ico =204; }
     location /robots.txt  { try_files $uri /robots.txt  =404; }
 
+    # Endpoints de salud php-fpm
+    location ~ ^/(ping|status)$ {
+        access_log off;
+        fastcgi_pass 127.0.0.1:9000;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $fastcgi_script_name;
+    }
+
     location /storage/ {
         try_files $uri $uri/ =404;
     }
@@ -173,11 +193,12 @@ RUN chown -R www:www storage bootstrap/cache database public \
     && chmod -R 775 bootstrap/cache \
     && if [ -f database/database.sqlite ]; then chmod 664 database/database.sqlite; fi
 
-# Ajustes php-fpm
+# Ajustes php-fpm (incluye ping/status)
 RUN sed -i 's/^;clear_env = no/clear_env = no/' /usr/local/etc/php-fpm.d/www.conf \
     && sed -i 's/^user = www-data/user = www/' /usr/local/etc/php-fpm.d/www.conf \
     && sed -i 's/^group = www-data/group = www/' /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i 's/^;pm.max_children = 5/pm.max_children = 20/' /usr/local/etc/php-fpm.d/www.conf || true
+    && sed -i 's/^;pm.max_children = 5/pm.max_children = 20/' /usr/local/etc/php-fpm.d/www.conf || true \
+    && { echo 'ping.path = /ping'; echo 'pm.status_path = /status'; } >> /usr/local/etc/php-fpm.d/www.conf
 
 # Entrypoint
 COPY <<'ENTRYPOINT' /usr/local/bin/docker-entrypoint.sh
@@ -218,8 +239,24 @@ exec nginx -g 'daemon off;'
 ENTRYPOINT
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Script de healthcheck combinando HTTP y ping php-fpm
+COPY <<'HEALTHSCRIPT' /usr/local/bin/healthcheck.sh
+#!/bin/sh
+set -e
+# Revisión HTTP raíz
+curl -fsS http://localhost/ > /dev/null
+# Revisión php-fpm ping
+if curl -fsS http://localhost/ping | grep -q pong; then
+  exit 0
+else
+  exit 1
+fi
+HEALTHSCRIPT
+RUN chmod +x /usr/local/bin/healthcheck.sh
+
 EXPOSE 80
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -fsS http://localhost/ || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD /usr/local/bin/healthcheck.sh || exit 1
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # USO:
