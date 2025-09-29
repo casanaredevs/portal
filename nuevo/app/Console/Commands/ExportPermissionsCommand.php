@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Permissions\Permission as PermissionEnum;
+use App\Permissions\PermissionMetadata;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 
@@ -26,19 +27,28 @@ class ExportPermissionsCommand extends Command
             $entries[] = [ 'key' => (string) $key, 'value' => $case->value ];
         }
 
+        $meta = PermissionMetadata::all();
+
         $lines = [];
         $lines[] = '/* AUTO-GENERATED FILE - DO NOT EDIT';
         $lines[] = '   Run: php artisan permissions:export';
         $lines[] = ' */';
         $lines[] = '';
         $lines[] = 'export const PERMISSIONS = {';
-        foreach ($entries as $e) {
-            $lines[] = "  {$e['key']}: '{$e['value']}',";
-        }
+        foreach ($entries as $e) { $lines[] = "  {$e['key']}: '{$e['value']}',"; }
         $lines[] = '} as const;';
         $lines[] = '';
         $lines[] = 'export type PermissionString = typeof PERMISSIONS[keyof typeof PERMISSIONS];';
         $lines[] = 'export const PERMISSIONS_LIST: PermissionString[] = Object.values(PERMISSIONS);';
+        $lines[] = '';
+        $lines[] = 'export const PERMISSION_META: Record<PermissionString,{label:string;category:string;description?:string}> = {';
+        foreach ($meta as $perm => $data) {
+            $label = addslashes($data['label']);
+            $category = addslashes($data['category']);
+            $desc = isset($data['description']) ? addslashes($data['description']) : null;
+            $lines[] = "  '{$perm}': { label: '{$label}', category: '{$category}'" . ($desc ? ", description: '{$desc}'" : '') . ' },';
+        }
+        $lines[] = '};';
         $lines[] = '';
         $content = implode(PHP_EOL, $lines) . PHP_EOL;
 
@@ -49,4 +59,3 @@ class ExportPermissionsCommand extends Command
         return self::SUCCESS;
     }
 }
-

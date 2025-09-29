@@ -137,6 +137,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/public/metrics', PublicMetricsController::class)->name('public.metrics');
 Route::get('/public/events/upcoming', [PublicEventController::class,'upcoming'])->name('public.events.upcoming');
 
+// Rutas de administración
+Route::middleware(['auth','verified','permission:users.manage'])->prefix('admin')->name('admin.')->group(function() {
+    Route::get('/roles-permissions', [\App\Http\Controllers\Admin\RolePermissionController::class,'index'])->name('roles-permissions.index');
+    Route::post('/roles/{role}/permissions', [\App\Http\Controllers\Admin\RolePermissionController::class,'syncRolePermissions'])->name('roles-permissions.roles.sync');
+    Route::post('/users/{user}/roles', [\App\Http\Controllers\Admin\RolePermissionController::class,'syncUserRoles'])->name('roles-permissions.users.sync');
+});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
