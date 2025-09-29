@@ -1,7 +1,7 @@
 # ------------------------------------------------------------
 # Etapa 1: Dependencias PHP (Composer) - misma versión PHP que runtime
 # ------------------------------------------------------------
-FROM composer:2.7-php8.2 AS vendor
+FROM composer:2.7 AS vendor
 WORKDIR /app
 
 # Copiamos definición de dependencias primero para aprovechar cache
@@ -11,12 +11,13 @@ RUN composer install \
     --no-progress \
     --no-interaction \
     --prefer-dist \
+    --no-scripts \
     --optimize-autoloader
 
 # ------------------------------------------------------------
 # Etapa 2: Build de assets (Node / Vite)
 # ------------------------------------------------------------
-FROM node:20-alpine AS assets
+FROM node:20-bookworm-slim AS assets
 WORKDIR /app
 
 # Copiamos manifests de dependencias JS
@@ -27,8 +28,12 @@ RUN if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm inst
 
 # Archivos de configuración y fuentes necesarias para build
 COPY vite.config.ts tsconfig.json ./
+COPY components.json* ./
 COPY resources ./resources
 COPY public ./public
+
+# Desactivar generación de tipos Wayfinder (evita ejecutar php artisan en build)
+ENV BUILD_WAYFINDER_TYPES=0
 
 # Build de assets de producción
 RUN npm run build
@@ -46,7 +51,7 @@ ENV APP_ENV=production \
     PHP_OPCACHE_MAX_ACCELERATED_FILES=20000
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git unzip curl libzip-dev libicu-dev libpq-dev libonig-dev libxml2-dev sqlite3 \
+        git unzip curl libzip-dev libicu-dev libpq-dev libonig-dev libxml2-dev sqlite3 libsqlite3-dev pkg-config \
     && docker-php-ext-install intl zip pdo_mysql pdo_sqlite bcmath \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
@@ -81,6 +86,14 @@ RUN chown -R www-data:www-data storage bootstrap/cache database \
 COPY <<'EOF' /usr/local/bin/docker-entrypoint.sh
 #!/usr/bin/env bash
 set -e
+
+# Si falta el cache de packages (por --no-scripts) lo generamos
+if [ ! -f bootstrap/cache/packages.php ]; then
+  echo "[entrypoint] Generando manifest de paquetes (artisan package:discover)..."
+  # Creamos .env temporal si no existe para evitar errores de bootstrap
+  if [ ! -f .env ] && [ -f .env.example ]; then cp .env.example .env; fi
+  php artisan package:discover --ansi || echo "[entrypoint] Advertencia: package:discover falló (continuando)."
+fi
 
 if [ "${RUN_MIGRATIONS}" = "true" ]; then
   echo "[entrypoint] Ejecutando migraciones..."

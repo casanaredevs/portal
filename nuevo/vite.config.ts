@@ -4,6 +4,11 @@ import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
+// Permite desactivar la generación de tipos Wayfinder en entornos donde no queremos ejecutar "php artisan" (por ejemplo, build de Docker)
+const enableWayfinder =
+    process.env.BUILD_WAYFINDER_TYPES !== '0' &&
+    process.env.BUILD_WAYFINDER_TYPES !== 'false';
+
 export default defineConfig({
     plugins: [
         laravel({
@@ -13,9 +18,14 @@ export default defineConfig({
         }),
         react(),
         tailwindcss(),
-        wayfinder({
-            formVariants: true,
-        }),
+        // Solo añadimos wayfinder si no está deshabilitado por variable de entorno
+        ...(enableWayfinder
+            ? [
+                  wayfinder({
+                      formVariants: true,
+                  }),
+              ]
+            : []),
     ],
     esbuild: {
         jsx: 'automatic',
