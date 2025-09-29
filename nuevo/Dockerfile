@@ -1,267 +1,83 @@
-# ------------------------------------------------------------
-# Stage 1: PHP base (FPM) con extensiones requeridas (sin SQLite)
-# ------------------------------------------------------------
-FROM php:8.4-fpm-alpine AS php-base
+# --- ETAPA 1: Builder Unificado (PHP + Node.js) ---
+FROM php:8.3-fpm-alpine AS builder
 
-ENV PHP_MEMORY_LIMIT=512M \
-    PHP_OPCACHE_VALIDATE_TIMESTAMPS=0 \
-    PHP_OPCACHE_MAX_ACCELERATED_FILES=20000 \
-    APP_ENV=production \
-    APP_DEBUG=false \
-    OPTIMIZE_ON_STARTUP=true \
-    TZ=UTC
+# Instalamos dependencias del sistema
+RUN apk add --no-cache \
+    $PHPIZE_DEPS \
+    linux-headers \
+    libzip-dev \
+    libpng-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    oniguruma-dev \
+    zlib-dev \
+    git \
+    unzip \
+    nodejs \
+    npm
 
-# Instalación de dependencias y configuración base
-RUN set -eux; \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev oniguruma-dev libpq-dev curl-dev; \
-    apk add --no-cache git unzip bash icu-libs libzip oniguruma libpq curl nginx tzdata; \
-    docker-php-ext-configure intl; \
-    docker-php-ext-install -j"$(nproc)" intl zip pdo_mysql pdo_pgsql bcmath mbstring opcache; \
-    { \
-      echo 'opcache.enable=1'; \
-      echo 'opcache.enable_cli=1'; \
-      echo 'opcache.memory_consumption=256'; \
-      echo 'opcache.interned_strings_buffer=16'; \
-      echo 'opcache.max_accelerated_files='${PHP_OPCACHE_MAX_ACCELERATED_FILES}; \
-      echo 'opcache.validate_timestamps='${PHP_OPCACHE_VALIDATE_TIMESTAMPS}; \
-      echo 'opcache.save_comments=1'; \
-      echo 'opcache.fast_shutdown=1'; \
-    } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
-    echo 'memory_limit='${PHP_MEMORY_LIMIT} > /usr/local/etc/php/conf.d/memory-limit.ini; \
-    cp /usr/share/zoneinfo/${TZ} /etc/localtime || true; \
-    echo ${TZ} > /etc/timezone; \
-    echo "date.timezone=${TZ}" > /usr/local/etc/php/conf.d/timezone.ini; \
-    apk del .build-deps; \
-    rm -rf /tmp/* /var/cache/apk/*
+# Instalamos las extensiones de PHP
+RUN docker-php-ext-install pdo_mysql zip gd exif pcntl bcmath sockets
 
-WORKDIR /var/www/html
+# Instalamos Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# ------------------------------------------------------------
-# Stage 2: Vendor (Composer install sin dev)
-# ------------------------------------------------------------
-FROM php-base AS vendor
-ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1
-# Verificación de firma oficial del instalador de Composer (SHA384)
-RUN set -eux; \
-    EXPECTED_SIGNATURE="$(curl -fsSL https://composer.github.io/installer.sig)"; \
-    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; \
-    ACTUAL_SIGNATURE="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"; \
-    if [ "${EXPECTED_SIGNATURE}" != "${ACTUAL_SIGNATURE}" ]; then echo >&2 'ERROR: Invalid Composer installer signature'; rm composer-setup.php; exit 1; fi; \
-    php composer-setup.php --install-dir=/usr/local/bin --filename=composer --quiet; \
-    rm composer-setup.php
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-progress --no-scripts --prefer-dist --optimize-autoloader
-
-# ------------------------------------------------------------
-# Stage 3: Generación de tipos Wayfinder (antes del build de assets)
-# ------------------------------------------------------------
-FROM php-base AS wayfinder
-WORKDIR /var/www/html
-# Copiamos sólo lo necesario para que artisan cargue rutas y controladores
-COPY composer.json composer.lock artisan .env.example ./
-COPY routes ./routes
-COPY app ./app
-COPY config ./config
-COPY bootstrap ./bootstrap
-# Dependencias
-COPY --from=vendor /var/www/html/vendor ./vendor
-# Creamos estructura base
-RUN mkdir -p resources/js
-# Generamos tipos (garantizando APP_KEY y descubriendo paquetes). Creamos directorios vacíos si no se generan.
-RUN set -eux; \
-    if [ ! -f .env ] && [ -f .env.example ]; then cp .env.example .env; fi; \
-    if ! grep -q '^APP_KEY=' .env; then echo 'APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=' >> .env; fi; \
-    php artisan package:discover --ansi || echo "[build] WARN: package:discover falló"; \
-    php artisan wayfinder:generate --ansi || echo "[build] WARN: wayfinder:generate falló (continuando)"; \
-    mkdir -p resources/js/routes resources/js/actions resources/js/wayfinder; \
-    touch resources/js/routes/.keep resources/js/actions/.keep resources/js/wayfinder/.keep
-
-# ------------------------------------------------------------
-# Stage 4: Assets (Node / Vite + Inertia)
-# ------------------------------------------------------------
-FROM node:20-alpine AS assets
+# Establecemos el directorio de trabajo
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
-COPY vite.config.ts tsconfig.json ./
-COPY components.json* ./
-COPY resources ./resources
-COPY public ./public
-# Copiamos los tipos generados de Wayfinder (routes, actions, wayfinder)
-COPY --from=wayfinder /var/www/html/resources/js/routes ./resources/js/routes
-COPY --from=wayfinder /var/www/html/resources/js/actions ./resources/js/actions
-COPY --from=wayfinder /var/www/html/resources/js/wayfinder ./resources/js/wayfinder
-# Desactivamos el plugin en runtime de build (evita intentar regenerar sin PHP)
-ENV BUILD_WAYFINDER_TYPES=0
+
+# Copiamos todos los archivos de la aplicación
+COPY --chown=www-data:www-data . .
+
+# Asignamos la propiedad del directorio de trabajo al usuario www-data
+RUN chown www-data:www-data /app
+
+# Instalamos dependencias de Composer (backend)
+USER www-data
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+# Instalamos dependencias de NPM y compilamos los assets (frontend)
+RUN npm install
 RUN npm run build
+USER root
 
-# ------------------------------------------------------------
-# Stage 5: Runtime final (PHP-FPM + Nginx)
-# ------------------------------------------------------------
-FROM php-base AS runtime
+# Optimizamos Laravel para producción
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
 
-# Crear usuario no root
-RUN set -eux; addgroup -g 1000 -S www || true; adduser -S -D -H -u 1000 -G www www || true
+# --- ETAPA 2: Imagen Final de Producción ---
+FROM php:8.3-fpm-alpine
 
-# nginx.conf completo con bloque http que incluye conf.d
-COPY <<'NGINXMAIN' /etc/nginx/nginx.conf
-user  www;  # Usuario definido
-worker_processes auto;
+WORKDIR /var/www
 
-error_log  /var/log/nginx/error.log notice;
-pid        /var/run/nginx.pid;
+# Instalamos las dependencias de desarrollo, compilamos extensiones y luego las limpiamos
+RUN apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        linux-headers \
+        libzip-dev \
+        libpng-dev \
+        freetype-dev \
+        libjpeg-turbo-dev \
+        oniguruma-dev \
+    && apk add --no-cache libzip libpng freetype libjpeg-turbo oniguruma \
+    && docker-php-ext-install pdo_mysql zip gd exif pcntl bcmath sockets \
+    && apk del .build-deps
 
-events {
-    worker_connections  1024;
-}
+# Instalamos Supervisor y Nginx
+RUN apk add --no-cache supervisor nginx
 
-http {
-    include       /etc/nginx/mime.types;
-    default_type  application/octet-stream;
+# Copiamos la configuración de Nginx y Supervisor
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-    sendfile        on;
-    keepalive_timeout  65;
-    client_max_body_size 25M;
+# Copiamos la aplicación ya construida desde la etapa builder
+COPY --from=builder --chown=www-data:www-data /app .
 
-    # Logs (puedes redirigir a stdout/stderr)
-    access_log /dev/stdout;
-    error_log  /dev/stderr warn;
+# Asignamos los permisos correctos para Laravel
+RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-    include /etc/nginx/conf.d/*.conf;
-}
-NGINXMAIN
-
-# Server block aislado
-COPY <<'SERVERCONF' /etc/nginx/conf.d/app.conf
-server {
-    listen 80 default_server;
-    server_name _;
-    root /var/www/html/public;
-    index index.php index.html;
-
-    add_header X-Frame-Options SAMEORIGIN;
-    add_header X-Content-Type-Options nosniff;
-
-    location /favicon.ico { try_files $uri /favicon.ico =204; }
-    location /robots.txt  { try_files $uri /robots.txt  =404; }
-
-    # Endpoints de salud php-fpm
-    location ~ ^/(ping|status)$ {
-        access_log off;
-        fastcgi_pass 127.0.0.1:9000;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $fastcgi_script_name;
-    }
-
-    location /storage/ {
-        try_files $uri $uri/ =404;
-    }
-
-    location ~ \.php$ {
-        try_files $uri =404;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_index index.php;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        fastcgi_param DOCUMENT_ROOT $realpath_root;
-        fastcgi_read_timeout 60s;
-    }
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~* \.(?:css|js|mjs|jpg|jpeg|png|gif|svg|webp|ico|woff2?)$ {
-        try_files $uri /index.php?$query_string;
-        expires 7d;
-        access_log off;
-    }
-}
-SERVERCONF
-
-# Copiar código fuente y artefactos
-COPY . ./
-RUN rm -f bootstrap/cache/*.php || true
-COPY --from=vendor /var/www/html/vendor ./vendor
-COPY --from=vendor /var/www/html/composer.lock ./composer.lock
-COPY --from=assets /app/public/build ./public/build
-
-# Permisos
-RUN chown -R www:www storage bootstrap/cache database public \
-    && find storage -type d -exec chmod 775 {} \; \
-    && find storage -type f -exec chmod 664 {} \; \
-    && chmod -R 775 bootstrap/cache \
-    && if [ -f database/database.sqlite ]; then chmod 664 database/database.sqlite; fi
-
-# Ajustes php-fpm (incluye ping/status)
-RUN sed -i 's/^;clear_env = no/clear_env = no/' /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i 's/^user = www-data/user = www/' /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i 's/^group = www-data/group = www/' /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i 's/^;pm.max_children = 5/pm.max_children = 20/' /usr/local/etc/php-fpm.d/www.conf || true \
-    && { echo 'ping.path = /ping'; echo 'pm.status_path = /status'; } >> /usr/local/etc/php-fpm.d/www.conf
-
-# Entrypoint
-COPY <<'ENTRYPOINT' /usr/local/bin/docker-entrypoint.sh
-#!/usr/bin/env bash
-set -e
-cd /var/www/html
-
-if [ ! -f .env ] && [ -f .env.example ]; then
-  cp .env.example .env
-fi
-
-rm -f bootstrap/cache/packages.php bootstrap/cache/services.php 2>/dev/null || true
-php artisan package:discover --ansi || echo "[entrypoint] WARN: package:discover falló (continuando)"
-
-if [ ! -L public/storage ]; then
-  php artisan storage:link 2>/dev/null || true
-fi
-
-if ! grep -q '^APP_KEY=' .env 2>/dev/null && [ -z "${APP_KEY}" ]; then
-  echo "[entrypoint] ADVERTENCIA: Falta APP_KEY. Genera una con: docker exec -it $HOSTNAME php artisan key:generate"
-fi
-
-if [ "${RUN_MIGRATIONS}" = "true" ]; then
-  echo "[entrypoint] Ejecutando migraciones"
-  php artisan migrate --force || echo "[entrypoint] WARN: migraciones fallaron"
-fi
-
-if [ "${OPTIMIZE_ON_STARTUP}" = "true" ]; then
-  echo "[entrypoint] Cacheando config/rutas/vistas/eventos"
-  php artisan config:cache --ansi || true
-  php artisan route:cache --ansi || true
-  php artisan view:cache --ansi || true
-  php artisan event:cache --ansi || true
-fi
-
-php-fpm -D
-exec nginx -g 'daemon off;'
-ENTRYPOINT
-
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# Script de healthcheck combinando HTTP y ping php-fpm
-COPY <<'HEALTHSCRIPT' /usr/local/bin/healthcheck.sh
-#!/bin/sh
-set -e
-# Revisión HTTP raíz
-curl -fsS http://localhost/ > /dev/null
-# Revisión php-fpm ping
-if curl -fsS http://localhost/ping | grep -q pong; then
-  exit 0
-else
-  exit 1
-fi
-HEALTHSCRIPT
-RUN chmod +x /usr/local/bin/healthcheck.sh
-
+# Exponemos el puerto 80
 EXPOSE 80
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD /usr/local/bin/healthcheck.sh || exit 1
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-# USO:
-# docker build -t casanare-portal:php84-fpm .
-# docker run -d --name portal -p 8080:80 \
-#   -e APP_KEY=base64:XXXX...= \
-#   -e APP_URL=https://tu-dominio \
-#   casanare-portal:php84-fpm
+# Comando para iniciar Supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
