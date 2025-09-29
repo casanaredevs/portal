@@ -30,6 +30,7 @@ interface ProfileFormData {
     about: string;
     location_city: string;
     location_country: string;
+    avatar_url?: string; // agregado para formulario de avatar
     privacy: PrivacySettings;
 }
 
@@ -64,6 +65,7 @@ export default function Profile({
         about: profileUser?.about || '',
         location_city: profileUser?.location_city || '',
         location_country: profileUser?.location_country || '',
+        avatar_url: profileUser?.avatar_url || '',
         privacy: (profileUser?.privacy as PrivacySettings) || {
             bio: 'public',
             about: 'public',
