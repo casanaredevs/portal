@@ -5,6 +5,7 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
 import React, { useEffect, useMemo, useState } from 'react';
+import { Check, Loader2 } from 'lucide-react';
 
 interface RolePayload {
     id: number;
@@ -46,598 +47,394 @@ interface PageProps {
     admins_count: number;
 }
 
-const CategoryBlock: React.FC<{
+// Utilidades locales
+const cx = (...cls: (string|false|undefined)[]) => cls.filter(Boolean).join(' ');
+
+// Eliminamos CategoryBlock anterior y lo reemplazamos por uno colapsable
+interface CollapsibleCategoryProps {
     category: string;
     perms: PermPayload[];
-    role?: RolePayload;
-    onToggle?: (perm: string) => void;
-}> = ({ category, perms, role, onToggle }) => {
+    role: RolePayload;
+    isAdmin: boolean;
+    onToggle: (perm: string) => void;
+    permFilter: string;
+    original: Set<string>;
+}
+
+const CollapsibleCategory: React.FC<CollapsibleCategoryProps> = ({ category, perms, role, isAdmin, onToggle, permFilter, original }) => {
+    const [open, setOpen] = useState(true);
+    const visiblePerms = perms.filter(p => {
+        if (!permFilter) return true;
+        const hay = permFilter.toLowerCase();
+        return p.label.toLowerCase().includes(hay) || p.name.toLowerCase().includes(hay);
+    });
+    if (!visiblePerms.length) return null;
     return (
-        <div className="space-y-2 rounded border p-3">
-            <h4 className="text-sm font-semibold tracking-wide text-gray-600 uppercase">
-                {category}
-            </h4>
-            <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-                {perms.map((p) => {
-                    const checked = !!role?.permissions.includes(p.name);
-                    return (
-                        <label
-                            key={p.name}
-                            className="flex items-start gap-2 text-sm"
-                        >
-                            <input
-                                type="checkbox"
-                                disabled={role?.is_admin_star}
-                                checked={checked}
-                                onChange={() => onToggle && onToggle(p.name)}
-                            />
-                            <span>
-                                <span className="font-medium">{p.label}</span>
-                                <span className="block font-mono text-[11px] text-gray-500">
-                                    {p.name}
+        <div className="rounded border bg-neutral-50/40 dark:bg-neutral-900/40">
+            <button
+                type="button"
+                onClick={() => setOpen(o => !o)}
+                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm font-semibold tracking-wide text-neutral-600 dark:text-neutral-300"
+            >
+                <span className="uppercase">{category}</span>
+                <span className="text-xs font-normal text-neutral-500 dark:text-neutral-400">{open ? '−' : '+'}</span>
+            </button>
+            {open && (
+                <div className="grid gap-2 border-t px-3 py-3 sm:grid-cols-2 md:grid-cols-3">
+                    {visiblePerms.map(p => {
+                        const checked = role.permissions.includes(p.name);
+                        const was = original.has(p.name);
+                        const added = checked && !was;
+                        const removed = !checked && was;
+                        return (
+                            <label
+                                key={p.name}
+                                className={cx(
+                                    'group flex items-start gap-2 rounded p-1 text-xs transition',
+                                    !isAdmin && 'cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800/80',
+                                    isAdmin && 'opacity-70',
+                                    added && 'ring-1 ring-green-500/70 bg-green-50 dark:bg-green-900/30',
+                                    removed && 'ring-1 ring-red-500/60 bg-red-50/60 dark:bg-red-900/20 line-through'
+                                )}
+                            >
+                                <input
+                                    type="checkbox"
+                                    className="mt-0.5"
+                                    disabled={isAdmin}
+                                    checked={checked}
+                                    onChange={() => !isAdmin && onToggle(p.name)}
+                                />
+                                <span className="leading-tight">
+                                    <span className="block font-medium text-neutral-800 dark:text-neutral-200">{p.label}</span>
+                                    <span className="block font-mono text-[10px] text-neutral-500">{p.name}</span>
                                 </span>
-                            </span>
-                        </label>
-                    );
-                })}
-            </div>
+                            </label>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 };
 
 // Reemplazo completo del componente para soportar nuevas props y funciones
 const RolesPermissionsPage: React.FC<PageProps> = (props) => {
-    const [selectedRole, setSelectedRole] = useState<RolePayload | null>(
-        props.roles[0] ?? null,
-    );
+    // Tabs: 'roles' | 'users'
+    const [activeTab, setActiveTab] = useState<'roles' | 'users'>('roles');
 
-    // --- Búsqueda y paginación ---
-    const [search, setSearch] = useState(props.filters?.search || '');
-    const [perPage, setPerPage] = useState<number>(
-        props.filters?.per_page || 25,
-    );
-    const [debouncedSearch, setDebouncedSearch] = useState(search);
+    // Selected role
+    const [selectedRole, setSelectedRole] = useState<RolePayload | null>(props.roles[0] ?? null);
+
+    // Separate searches
+    const [userSearch, setUserSearch] = useState(props.filters?.search || '');
+    const [permFilter, setPermFilter] = useState('');
+    const [debouncedUserSearch, setDebouncedUserSearch] = useState(userSearch);
+    useEffect(() => { const id = setTimeout(()=> setDebouncedUserSearch(userSearch), 350); return ()=> clearTimeout(id); }, [userSearch]);
     useEffect(() => {
-        const id = setTimeout(() => setDebouncedSearch(search), 300);
-        return () => clearTimeout(id);
-    }, [search]);
-    useEffect(() => {
-        // Navegar cuando cambien filtros (debounced)
         router.get(
             adminRoutes.rolesPermissions(),
-            { search: debouncedSearch, per_page: perPage },
+            { search: debouncedUserSearch, per_page: perPage },
             { preserveState: true, preserveScroll: true, replace: true },
         );
-    }, [debouncedSearch, perPage]);
+    }, [debouncedUserSearch, /* perPage below */]);
 
-    // --- Permisos agrupados ---
+    // Pagination per page
+    const [perPage, setPerPage] = useState<number>(props.filters?.per_page || 25);
+    useEffect(()=>{ router.get(adminRoutes.rolesPermissions(), { search: debouncedUserSearch, per_page: perPage }, { preserveState:true, preserveScroll:true, replace:true }); }, [perPage]);
+
+    // Original permissions snapshot per role (ref so does not trigger re-renders)
+    const originalRolePermsRef = React.useRef<Record<number, Set<string>>>({});
+    useEffect(() => {
+        const map: Record<number, Set<string>> = {};
+        props.roles.forEach(r => { map[r.id] = new Set(r.permissions); });
+        originalRolePermsRef.current = map;
+    }, [props.roles]);
+
+    // Build categories
     const permsByCategory = useMemo(() => {
         const map: Record<string, PermPayload[]> = {};
-        props.permissions.forEach((p) => {
-            (map[p.category] ||= []).push(p);
-        });
-        Object.values(map).forEach((arr) =>
-            arr.sort((a, b) => a.label.localeCompare(b.label)),
-        );
-        return Object.entries(map).sort((a, b) => a[0].localeCompare(b[0]));
+        props.permissions.forEach((p) => { (map[p.category] ||= []).push(p); });
+        Object.values(map).forEach(arr => arr.sort((a,b)=> a.label.localeCompare(b.label)));
+        return Object.entries(map).sort((a,b)=> a[0].localeCompare(b[0]));
     }, [props.permissions]);
 
+    // Toggle permission in current selected role state
     const togglePermission = (perm: string) => {
         if (!selectedRole) return;
-        if (selectedRole.is_admin_star) return; // no toggle for admin
+        if (selectedRole.is_admin_star) return;
         const has = selectedRole.permissions.includes(perm);
-        const updated = {
-            ...selectedRole,
-            permissions: has
-                ? selectedRole.permissions.filter((p) => p !== perm)
-                : [...selectedRole.permissions, perm],
-        };
-        setSelectedRole(updated);
+        setSelectedRole(r => r ? ({ ...r, permissions: has ? r.permissions.filter(p=>p!==perm) : [...r.permissions, perm] }) : r);
     };
 
+    // Diff detection for Save button & legend
+    const original = selectedRole ? (originalRolePermsRef.current[selectedRole.id] || new Set()) : new Set<string>();
+    const addedCount = selectedRole ? selectedRole.permissions.filter(p => !original.has(p)).length : 0;
+    const removedCount = selectedRole ? Array.from(original).filter(p => !selectedRole.permissions.includes(p)).length : 0;
+    const hasChanges = (addedCount + removedCount) > 0;
+
+    // Save role with inline feedback
+    const [savingRole, setSavingRole] = useState(false);
+    const [roleJustSaved, setRoleJustSaved] = useState(false);
     const saveRole = () => {
-        if (!selectedRole) return;
+        if (!selectedRole || selectedRole.is_admin_star || !hasChanges) return;
+        setSavingRole(true);
         router.post(
             `${adminPath('roles')}/${selectedRole.id}/permissions`,
             { permissions: selectedRole.permissions },
-            { preserveScroll: true },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    // Refresh original snapshot for that role
+                    originalRolePermsRef.current[selectedRole.id] = new Set(selectedRole.permissions);
+                    setRoleJustSaved(true);
+                    setTimeout(()=> setRoleJustSaved(false), 1800);
+                },
+                onFinish: () => setSavingRole(false),
+            }
         );
     };
 
-    // --- Usuarios y roles individuales ---
-    const [selectedUser, setSelectedUser] = useState<UserPayload | null>(
-        props.users.data[0] ?? null,
-    );
+    // User roles editing
+    const [selectedUser, setSelectedUser] = useState<UserPayload | null>(props.users.data[0] ?? null);
     const { data, setData, post } = useForm<{ roles: string[] }>({ roles: [] });
-    useEffect(() => {
-        if (selectedUser) setData('roles', selectedUser.roles);
-    }, [selectedUser]);
-
+    useEffect(()=> { if (selectedUser) setData('roles', selectedUser.roles); }, [selectedUser]);
     const lastAdmin = props.admins_count === 1;
-    const selectedUserIsSoleAdmin = !!(
-        lastAdmin && selectedUser?.roles.includes('admin')
-    );
-    const removingAdminWouldBreak =
-        selectedUserIsSoleAdmin && !data.roles.includes('admin');
-
+    const selectedUserIsSoleAdmin = !!(lastAdmin && selectedUser?.roles.includes('admin'));
+    const removingAdminWouldBreak = selectedUserIsSoleAdmin && !data.roles.includes('admin');
     const toggleUserRole = (role: string) => {
-        if (
-            role === 'admin' &&
-            selectedUserIsSoleAdmin &&
-            data.roles.includes('admin')
-        ) {
-            // intentar remover único admin: bloquear front
-            return;
-        }
+        if (role === 'admin' && selectedUserIsSoleAdmin && data.roles.includes('admin')) return;
         const has = data.roles.includes(role);
-        setData(
-            'roles',
-            has ? data.roles.filter((r) => r !== role) : [...data.roles, role],
-        );
+        setData('roles', has ? data.roles.filter(r=>r!==role) : [...data.roles, role]);
     };
 
+    const [savingUserRoles, setSavingUserRoles] = useState(false);
+    const [userRolesJustSaved, setUserRolesJustSaved] = useState(false);
     const saveUserRoles = () => {
-        if (!selectedUser) return;
-        if (removingAdminWouldBreak) return; // front guard
+        if (!selectedUser || removingAdminWouldBreak) return;
+        setSavingUserRoles(true);
         post(`${adminPath('users')}/${selectedUser.id}/roles`, {
             preserveScroll: true,
+            onSuccess: () => {
+                setUserRolesJustSaved(true);
+                setTimeout(()=> setUserRolesJustSaved(false), 1800);
+            },
+            onFinish: () => setSavingUserRoles(false)
         });
     };
 
-    // --- Selección masiva ---
+    // Bulk actions
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const allIdsCurrentPage = props.users.data.map((u) => u.id);
+    const allIdsCurrentPage = props.users.data.map(u=>u.id);
     const toggleSelectAllPage = () => {
-        const allSelected = allIdsCurrentPage.every((id) =>
-            selectedIds.includes(id),
-        );
-        setSelectedIds(
-            allSelected
-                ? selectedIds.filter((id) => !allIdsCurrentPage.includes(id))
-                : Array.from(new Set([...selectedIds, ...allIdsCurrentPage])),
-        );
+        const allSelected = allIdsCurrentPage.every(id => selectedIds.includes(id));
+        setSelectedIds(allSelected ? selectedIds.filter(id=> !allIdsCurrentPage.includes(id)) : Array.from(new Set([...selectedIds, ...allIdsCurrentPage])));
     };
-    const toggleSelectUser = (id: number) => {
-        setSelectedIds((prev) =>
-            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-        );
-    };
-
+    const toggleSelectUser = (id:number) => setSelectedIds(prev => prev.includes(id)? prev.filter(x=>x!==id): [...prev, id]);
     const [bulkRoles, setBulkRoles] = useState<string[]>([]);
     const [bulkMode, setBulkMode] = useState<'attach' | 'sync'>('attach');
-    const bulkAppliesToAllAdmins = () => {
-        // If sync mode and not including admin, and every current admin is in selection
-        if (bulkMode !== 'sync' || bulkRoles.includes('admin')) return false;
-        // We don't know full admin set on other pages; rely on server protection. Front partial detection only.
-        return false;
-    };
     const bulkDisabled = selectedIds.length === 0 || bulkRoles.length === 0;
     const submitBulk = () => {
         if (bulkDisabled) return;
         router.post(
             adminPath('users/bulk/roles'),
-            {
-                user_ids: selectedIds,
-                roles: bulkRoles,
-                mode: bulkMode,
-            },
-            {
-                preserveScroll: true,
-                onSuccess() {
-                    setBulkRoles([]);
-                },
-            },
+            { user_ids: selectedIds, roles: bulkRoles, mode: bulkMode },
+            { preserveScroll: true, onSuccess: () => setBulkRoles([]) }
         );
     };
 
-    // --- Paginación UI helper ---
+    // Pagination helpers
     const pagination = props.users;
 
-    // Breadcrumbs
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Dashboard', href: dashboard().url },
         { title: 'Administración', href: adminPath() },
         { title: 'Roles & Permisos', href: adminRoutes.rolesPermissions() },
     ];
 
+    // UI RENDER HELPERS
+    const RoleLegend = hasChanges ? (
+        <div className="flex flex-wrap gap-3 text-[10px] text-neutral-500 dark:text-neutral-400">
+            <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded bg-green-500/30 ring-1 ring-green-500/60"/> Añadido</span>
+            <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded bg-red-500/30 ring-1 ring-red-500/60"/> Eliminado</span>
+        </div>
+    ) : null;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="space-y-8 p-6">
-                <Head title="Roles & Permisos" />
-                <h1 className="text-2xl font-bold">
-                    Administración de Roles & Permisos
-                </h1>
-
-                {/* Wrapper <Can> removed: route already protected by permission middleware */}
-                {/* Filtros */}
-                <div className="flex flex-wrap items-end gap-4">
-                    <div className="flex flex-col">
-                        <label className="text-xs font-medium text-gray-600">
-                            Buscar usuarios
-                        </label>
-                        <input
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="nombre, usuario o email"
-                            className="rounded border px-2 py-1 text-sm"
-                        />
-                    </div>
-                    <div className="flex flex-col">
-                        <label className="text-xs font-medium text-gray-600">
-                            Por página
-                        </label>
-                        <select
-                            value={perPage}
-                            onChange={(e) =>
-                                setPerPage(parseInt(e.target.value))
-                            }
-                            className="rounded border px-2 py-1 text-sm"
-                        >
-                            {[10, 25, 50, 100].map((n) => (
-                                <option key={n} value={n}>
-                                    {n}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="ml-auto text-xs text-gray-500">
-                        Admins actuales: {props.admins_count}
-                    </div>
+            <div className="space-y-5 p-4 md:p-6">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                    <h1 className="text-2xl font-bold tracking-tight">Administración de Roles & Permisos</h1>
+                    <div className="text-xs text-neutral-500 dark:text-neutral-400">Admins actuales: {props.admins_count}</div>
                 </div>
 
-                <div className="grid gap-8 xl:grid-cols-2">
-                    {/* Columna Roles */}
-                    <div className="space-y-4">
-                        <h2 className="text-lg font-semibold">Roles</h2>
+                {/* Tabs */}
+                <div className="flex gap-2 border-b border-neutral-200 dark:border-neutral-700">
+                    <button onClick={()=> setActiveTab('roles')} className={cx('px-3 py-2 text-sm font-medium border-b-2', activeTab==='roles' ? 'border-blue-600 text-blue-600 dark:text-blue-400' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200')}>Roles</button>
+                    <button onClick={()=> setActiveTab('users')} className={cx('px-3 py-2 text-sm font-medium border-b-2', activeTab==='users' ? 'border-blue-600 text-blue-600 dark:text-blue-400' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200')}>Usuarios</button>
+                </div>
+
+                {activeTab === 'roles' && (
+                    <div className="flex flex-col gap-4">
                         <div className="flex flex-wrap gap-2">
-                            {props.roles.map((r) => (
-                                <button
-                                    key={r.id}
-                                    onClick={() => setSelectedRole(r)}
-                                    className={`rounded border px-3 py-1 text-sm ${selectedRole?.id === r.id ? 'border-blue-600 bg-blue-600 text-white' : 'hover:bg-gray-100'}`}
-                                >
-                                    {r.name}
-                                    {r.is_admin_star && ' *'}
-                                </button>
-                            ))}
-                        </div>
-                        {selectedRole && (
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-md font-medium">
-                                        Permisos del rol:{' '}
-                                        <span className="font-semibold">
-                                            {selectedRole.name}
-                                        </span>
-                                    </h3>
+                            {props.roles.map(r => {
+                                const active = selectedRole?.id === r.id;
+                                return (
                                     <button
-                                        disabled={selectedRole.is_admin_star}
-                                        onClick={saveRole}
-                                        className="rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
-                                    >
-                                        Guardar
-                                    </button>
+                                        key={r.id}
+                                        onClick={() => setSelectedRole(r)}
+                                        className={cx('rounded-md border px-3 py-1.5 text-xs font-medium transition', active ? 'border-blue-600 bg-blue-600 text-white shadow-sm' : 'border-neutral-300 bg-white hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700')}
+                                    >{r.name}{r.is_admin_star && ' *'}</button>
+                                );
+                            })}
+                        </div>
+
+                        {selectedRole && (
+                            <div className="flex flex-col gap-4 rounded border bg-white/70 p-4 dark:border-neutral-700 dark:bg-neutral-900/60">
+                                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                                    <div className="space-y-1">
+                                        <h2 className="text-sm font-semibold">Permisos del rol: <span className="font-bold">{selectedRole.name}</span></h2>
+                                        {selectedRole.is_admin_star && <p className="text-[11px] text-amber-600 dark:text-amber-400">Rol admin: solo lectura (ya posee todos los permisos).</p>}
+                                        {RoleLegend}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {roleJustSaved && <span className="inline-flex items-center gap-1 rounded bg-green-600 px-2 py-1 text-[11px] font-medium text-white"><Check className="h-3 w-3"/> Guardado</span>}
+                                        <button
+                                            disabled={selectedRole.is_admin_star || !hasChanges || savingRole}
+                                            onClick={saveRole}
+                                            className={cx('inline-flex items-center gap-1 rounded px-3 py-1.5 text-xs font-medium', selectedRole.is_admin_star || !hasChanges ? 'bg-neutral-300 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500', savingRole && 'opacity-80')}
+                                        >{savingRole && <Loader2 className="h-3 w-3 animate-spin"/>} Guardar</button>
+                                    </div>
                                 </div>
-                                {selectedRole.is_admin_star && (
-                                    <p className="text-xs text-amber-600">
-                                        Este rol hereda automáticamente todos
-                                        los permisos. (Los checkboxes están
-                                        deshabilitados)
-                                    </p>
-                                )}
-                                <div className="max-h-[520px] space-y-5 overflow-auto pr-2">
+
+                                <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                                    <input
+                                        type="text"
+                                        value={permFilter}
+                                        onChange={e=> setPermFilter(e.target.value)}
+                                        placeholder="Filtrar permisos..."
+                                        className="w-full rounded border border-neutral-300 bg-white px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-800"
+                                    />
+                                    {permFilter && <button onClick={()=> setPermFilter('')} className="text-xs text-blue-600 hover:underline">Limpiar</button>}
+                                </div>
+
+                                <div className="flex max-h-[560px] flex-col gap-4 overflow-auto pr-1">
                                     {permsByCategory.map(([cat, perms]) => (
-                                        <div
+                                        <CollapsibleCategory
                                             key={cat}
-                                            className="space-y-2 rounded border p-3"
-                                        >
-                                            <h4 className="text-sm font-semibold tracking-wide text-gray-600 uppercase">
-                                                {cat}
-                                            </h4>
-                                            <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-                                                {perms.map((p) => {
-                                                    const checked =
-                                                        selectedRole.permissions.includes(
-                                                            p.name,
-                                                        );
-                                                    return (
-                                                        <label
-                                                            key={p.name}
-                                                            className="flex items-start gap-2 text-sm"
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                disabled={
-                                                                    selectedRole.is_admin_star
-                                                                }
-                                                                checked={
-                                                                    checked
-                                                                }
-                                                                onChange={() =>
-                                                                    togglePermission(
-                                                                        p.name,
-                                                                    )
-                                                                }
-                                                            />
-                                                            <span>
-                                                                <span className="font-medium">
-                                                                    {p.label}
-                                                                </span>
-                                                                <span className="block font-mono text-[11px] text-gray-500">
-                                                                    {p.name}
-                                                                </span>
-                                                            </span>
-                                                        </label>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
+                                            category={cat}
+                                            perms={perms}
+                                            role={selectedRole}
+                                            isAdmin={!!selectedRole.is_admin_star}
+                                            onToggle={togglePermission}
+                                            permFilter={permFilter}
+                                            original={original}
+                                        />
                                     ))}
                                 </div>
                             </div>
                         )}
                     </div>
+                )}
 
-                    {/* Columna Usuarios */}
-                    <div className="space-y-4">
-                        <h2 className="text-lg font-semibold">Usuarios</h2>
-
-                        {/* Acciones masivas */}
-                        <div className="space-y-3 rounded border bg-gray-50 p-3">
-                            <h3 className="text-sm font-medium">
-                                Acción masiva
-                            </h3>
-                            <div className="flex flex-wrap items-center gap-3">
-                                <div className="flex items-center gap-2 text-sm">
-                                    <span>Modo:</span>
-                                    <label className="flex items-center gap-1">
-                                        <input
-                                            type="radio"
-                                            name="bulk-mode"
-                                            value="attach"
-                                            checked={bulkMode === 'attach'}
-                                            onChange={() =>
-                                                setBulkMode('attach')
-                                            }
-                                        />{' '}
-                                        Adjuntar
-                                    </label>
-                                    <label className="flex items-center gap-1">
-                                        <input
-                                            type="radio"
-                                            name="bulk-mode"
-                                            value="sync"
-                                            checked={bulkMode === 'sync'}
-                                            onChange={() => setBulkMode('sync')}
-                                        />{' '}
-                                        Sincronizar
-                                    </label>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                    {Object.keys(props.roleMap).map(
-                                        (roleName) => {
-                                            const active =
-                                                bulkRoles.includes(roleName);
-                                            return (
-                                                <button
-                                                    type="button"
-                                                    key={roleName}
-                                                    onClick={() =>
-                                                        setBulkRoles(
-                                                            active
-                                                                ? bulkRoles.filter(
-                                                                      (r) =>
-                                                                          r !==
-                                                                          roleName,
-                                                                  )
-                                                                : [
-                                                                      ...bulkRoles,
-                                                                      roleName,
-                                                                  ],
-                                                        )
-                                                    }
-                                                    className={`rounded border px-2 py-1 text-xs ${active ? 'border-blue-600 bg-blue-600 text-white' : 'hover:bg-gray-100'}`}
-                                                >
-                                                    {roleName}
-                                                </button>
-                                            );
-                                        },
-                                    )}
-                                </div>
-                                <button
-                                    onClick={submitBulk}
-                                    disabled={bulkDisabled}
-                                    className="ml-auto rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
-                                >
-                                    Aplicar a seleccionados (
-                                    {selectedIds.length})
-                                </button>
+                {activeTab === 'users' && (
+                    <div className="flex flex-col gap-6">
+                        <div className="flex flex-wrap items-end gap-4 rounded border bg-white/70 p-4 dark:border-neutral-700 dark:bg-neutral-900/60">
+                            <div className="flex flex-col">
+                                <label className="text-[11px] font-medium uppercase tracking-wide text-neutral-500">Buscar usuarios</label>
+                                <input value={userSearch} onChange={e=> setUserSearch(e.target.value)} placeholder="nombre, usuario o email" className="w-64 rounded border border-neutral-300 bg-white px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-800"/>
                             </div>
-                            <p className="text-[11px] text-gray-500">
-                                Adjuntar: agrega roles sin remover existentes.
-                                Sincronizar: reemplaza roles por la lista
-                                elegida (con protección admin).
-                            </p>
-                        </div>
-
-                        <div className="overflow-x-auto rounded border">
-                            <table className="w-full text-sm">
-                                <thead className="bg-gray-50 text-gray-600">
-                                    <tr>
-                                        <th className="w-6 p-2 text-left">
-                                            <input
-                                                type="checkbox"
-                                                onChange={toggleSelectAllPage}
-                                                checked={
-                                                    allIdsCurrentPage.every(
-                                                        (id) =>
-                                                            selectedIds.includes(
-                                                                id,
-                                                            ),
-                                                    ) &&
-                                                    allIdsCurrentPage.length > 0
-                                                }
-                                            />
-                                        </th>
-                                        <th className="p-2 text-left">ID</th>
-                                        <th className="p-2 text-left">
-                                            Nombre
-                                        </th>
-                                        <th className="p-2 text-left">
-                                            Usuario
-                                        </th>
-                                        <th className="p-2 text-left">Roles</th>
-                                        <th className="p-2"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {props.users.data.map((u) => {
-                                        const rowSelected =
-                                            selectedIds.includes(u.id);
+                            <div className="flex flex-col">
+                                <label className="text-[11px] font-medium uppercase tracking-wide text-neutral-500">Por página</label>
+                                <select value={perPage} onChange={e=> setPerPage(parseInt(e.target.value))} className="rounded border border-neutral-300 bg-white px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-800">{[10,25,50,100].map(n=> <option key={n} value={n}>{n}</option>)}</select>
+                            </div>
+                            <div className="flex flex-col gap-1 text-xs text-neutral-500 dark:text-neutral-400">
+                                <span>Seleccionados: {selectedIds.length}</span>
+                                <span className="flex flex-wrap gap-1">
+                                    {Object.keys(props.roleMap).map(rn => {
+                                        const active = bulkRoles.includes(rn);
                                         return (
-                                            <tr
-                                                key={u.id}
-                                                className={
-                                                    selectedUser?.id === u.id
-                                                        ? 'bg-blue-50'
-                                                        : rowSelected
-                                                          ? 'bg-blue-100/40'
-                                                          : ''
-                                                }
-                                            >
-                                                <td className="p-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={rowSelected}
-                                                        onChange={() =>
-                                                            toggleSelectUser(
-                                                                u.id,
-                                                            )
-                                                        }
-                                                    />
-                                                </td>
-                                                <td className="p-2">{u.id}</td>
-                                                <td className="p-2">
-                                                    {u.name}
-                                                </td>
-                                                <td className="p-2">
-                                                    {u.username}
-                                                </td>
-                                                <td className="p-2">
-                                                    {u.roles.join(', ')}
-                                                </td>
-                                                <td className="p-2 text-right">
-                                                    <button
-                                                        onClick={() =>
-                                                            setSelectedUser(u)
-                                                        }
-                                                        className="text-xs text-blue-600 hover:underline"
-                                                    >
-                                                        Editar
-                                                    </button>
-                                                </td>
-                                            </tr>
+                                            <button key={rn} type="button" onClick={()=> setBulkRoles(ar => active ? ar.filter(x=>x!==rn): [...ar, rn])} className={cx('rounded border px-2 py-0.5', active ? 'border-blue-600 bg-blue-600 text-white' : 'border-neutral-300 bg-white hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-700 dark:hover:bg-neutral-600')}>{rn}</button>
                                         );
                                     })}
-                                </tbody>
-                            </table>
+                                </span>
+                            </div>
+                            <div className="ml-auto flex items-center gap-2 rounded border bg-neutral-100 px-2 py-1 text-xs dark:border-neutral-700 dark:bg-neutral-800">
+                                <span className="font-medium">Modo</span>
+                                <button onClick={()=> setBulkMode('attach')} className={cx('rounded px-2 py-0.5', bulkMode==='attach' ? 'bg-blue-600 text-white' : 'bg-white text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200')}>Adjuntar</button>
+                                <button onClick={()=> setBulkMode('sync')} className={cx('rounded px-2 py-0.5', bulkMode==='sync' ? 'bg-blue-600 text-white' : 'bg-white text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200')}>Sincronizar</button>
+                            </div>
+                            <div>
+                                <button onClick={submitBulk} disabled={bulkDisabled} className={cx('rounded px-3 py-1.5 text-xs font-medium', bulkDisabled ? 'bg-neutral-300 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500')}>Aplicar</button>
+                            </div>
                         </div>
 
-                        {/* Paginación */}
-                        <div className="flex flex-wrap items-center gap-2 text-xs">
-                            <span>
-                                Página {pagination.current_page} de{' '}
-                                {pagination.last_page} (Total {pagination.total}
-                                )
-                            </span>
-                            <div className="ml-auto flex gap-1">
-                                {pagination.links
-                                    .filter((l) => l.url)
-                                    .map((l, i) => (
-                                        <button
-                                            key={i}
-                                            disabled={l.active}
-                                            onClick={() =>
-                                                router.get(
-                                                    l.url!,
-                                                    {},
-                                                    {
-                                                        preserveScroll: true,
-                                                        preserveState: true,
-                                                    },
-                                                )
-                                            }
-                                            className={`rounded border px-2 py-1 ${l.active ? 'border-blue-600 bg-blue-600 text-white' : 'hover:bg-gray-100'}`}
-                                        >
-                                            {l.label
-                                                .replace('&laquo;', '«')
-                                                .replace('&raquo;', '»')}
-                                        </button>
+                        <div className="overflow-hidden rounded border bg-white/70 dark:border-neutral-700 dark:bg-neutral-900/60">
+                            <div className="max-h-[440px] overflow-auto">
+                                <table className="w-full text-sm">
+                                    <thead className="sticky top-0 bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                                        <tr>
+                                            <th className="w-6 p-2 text-left"><input type="checkbox" onChange={toggleSelectAllPage} checked={allIdsCurrentPage.every(id => selectedIds.includes(id)) && allIdsCurrentPage.length>0}/></th>
+                                            <th className="p-2 text-left">ID</th>
+                                            <th className="p-2 text-left">Nombre</th>
+                                            <th className="p-2 text-left">Usuario</th>
+                                            <th className="p-2 text-left">Roles</th>
+                                            <th className="p-2"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {props.users.data.map(u => {
+                                            const rowSelected = selectedIds.includes(u.id);
+                                            const active = selectedUser?.id === u.id;
+                                            return (
+                                                <tr key={u.id} className={cx('transition', active ? 'bg-blue-50 dark:bg-blue-900/30' : rowSelected ? 'bg-neutral-100 dark:bg-neutral-800/60' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/40')}>
+                                                    <td className="p-2"><input type="checkbox" checked={rowSelected} onChange={()=> toggleSelectUser(u.id)}/></td>
+                                                    <td className="p-2">{u.id}</td>
+                                                    <td className="p-2">{u.name}</td>
+                                                    <td className="p-2 font-mono text-xs text-neutral-600 dark:text-neutral-400">{u.username}</td>
+                                                    <td className="p-2"><span className="truncate text-xs">{u.roles.join(', ')}</span></td>
+                                                    <td className="p-2 text-right"><button onClick={()=> setSelectedUser(u)} className="text-xs font-medium text-blue-600 hover:underline">Editar</button></td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="flex items-center gap-2 border-t px-3 py-2 text-xs text-neutral-500 dark:border-neutral-700">
+                                <span>Página {pagination.current_page} de {pagination.last_page} (Total {pagination.total})</span>
+                                <div className="ml-auto flex gap-1">
+                                    {pagination.links.filter(l=> l.url).map((l,i)=> (
+                                        <button key={i} disabled={l.active} onClick={()=> router.get(l.url!, {}, { preserveScroll:true, preserveState:true })} className={cx('rounded border px-2 py-1', l.active ? 'border-blue-600 bg-blue-600 text-white' : 'border-neutral-300 bg-white hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-700 dark:hover:bg-neutral-600')}>{l.label.replace('&laquo;','«').replace('&raquo;','»')}</button>
                                     ))}
+                                </div>
                             </div>
                         </div>
 
                         {selectedUser && (
-                            <div className="space-y-3 rounded border p-3">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-md font-medium">
-                                        Roles del usuario:{' '}
-                                        <span className="font-semibold">
-                                            {selectedUser.username}
-                                        </span>
-                                    </h3>
-                                    <button
-                                        onClick={saveUserRoles}
-                                        disabled={removingAdminWouldBreak}
-                                        className="rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
-                                    >
-                                        Guardar
-                                    </button>
+                            <div className="rounded border bg-white/70 p-4 dark:border-neutral-700 dark:bg-neutral-900/60">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <h3 className="text-sm font-semibold">Roles del usuario: <span className="font-bold">{selectedUser.username}</span></h3>
+                                    <div className="flex items-center gap-2">
+                                        {userRolesJustSaved && <span className="inline-flex items-center gap-1 rounded bg-green-600 px-2 py-1 text-[11px] font-medium text-white"><Check className="h-3 w-3"/> Guardado</span>}
+                                        <button onClick={saveUserRoles} disabled={removingAdminWouldBreak || savingUserRoles} className={cx('rounded px-3 py-1.5 text-xs font-medium', removingAdminWouldBreak ? 'bg-neutral-300 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500', savingUserRoles && 'opacity-80')}>{savingUserRoles && <Loader2 className="h-3 w-3 animate-spin"/>} Guardar</button>
+                                    </div>
                                 </div>
-                                {removingAdminWouldBreak && (
-                                    <p className="text-xs text-amber-600">
-                                        No puedes remover el rol admin: sería el
-                                        último administrador.
-                                    </p>
-                                )}
-                                <div className="flex flex-wrap gap-3">
-                                    {Object.keys(props.roleMap).map(
-                                        (roleName) => {
-                                            const checked =
-                                                data.roles.includes(roleName);
-                                            const disabled =
-                                                roleName === 'admin' &&
-                                                selectedUserIsSoleAdmin &&
-                                                checked;
-                                            return (
-                                                <label
-                                                    key={roleName}
-                                                    className={`flex cursor-pointer items-center gap-1 rounded border px-2 py-1 text-sm select-none ${disabled ? 'opacity-60' : ''}`}
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checked}
-                                                        disabled={disabled}
-                                                        onChange={() =>
-                                                            toggleUserRole(
-                                                                roleName,
-                                                            )
-                                                        }
-                                                    />
-                                                    <span>
-                                                        {roleName}
-                                                        {roleName === 'admin' &&
-                                                            ' *'}
-                                                    </span>
-                                                </label>
-                                            );
-                                        },
-                                    )}
+                                {removingAdminWouldBreak && <p className="mb-2 text-[11px] text-amber-600 dark:text-amber-400">No puedes remover el rol admin: sería el último administrador.</p>}
+                                <div className="flex flex-wrap gap-2">
+                                    {Object.keys(props.roleMap).map(roleName => {
+                                        const checked = data.roles.includes(roleName);
+                                        const disabled = roleName === 'admin' && selectedUserIsSoleAdmin && checked;
+                                        return (
+                                            <label key={roleName} className={cx('flex cursor-pointer items-center gap-1 rounded border px-2 py-1 text-xs font-medium', disabled ? 'opacity-60' : 'hover:bg-neutral-100 dark:hover:bg-neutral-800/60', checked ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/30' : 'border-neutral-300 dark:border-neutral-600')}>
+                                                <input type="checkbox" checked={checked} disabled={disabled} onChange={()=> toggleUserRole(roleName)}/>
+                                                {roleName}{roleName==='admin' && ' *'}
+                                            </label>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
                     </div>
-                </div>
+                )}
             </div>
         </AppLayout>
     );
