@@ -31,3 +31,8 @@ export default defineConfig({
         jsx: 'automatic',
     },
 });
+
+// NOTA IMPORTANTE:
+//  La carpeta resources/js/routes es generada automáticamente por Wayfinder.
+//  No coloques helpers custom ahí (p.ej. adminPath). Usa en su lugar archivos estables en resources/js/lib.
+//  Helper actual de rutas admin: resources/js/lib/admin-routes.ts

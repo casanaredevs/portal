@@ -12,6 +12,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { usePermissions } from '@/lib/permissions';
+import { adminRoutes } from '@/lib/admin-routes';
 import { KeyRound, Shield } from 'lucide-react';
 import React from 'react';
 
@@ -25,7 +26,7 @@ interface AdminLink {
 const ADMIN_LINKS: AdminLink[] = [
     {
         title: 'Roles & Permisos',
-        href: '/dashboard/admin/roles-permissions',
+        href: adminRoutes.rolesPermissions(),
         perm: 'users.manage',
         icon: KeyRound,
     },

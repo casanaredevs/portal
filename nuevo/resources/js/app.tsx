@@ -4,8 +4,14 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+import { adminPath, adminRoutes } from '@/lib/admin-routes';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+if (typeof window !== 'undefined') {
+    (window as any).adminPath = adminPath;
+    (window as any).adminRoutes = adminRoutes;
+}
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),

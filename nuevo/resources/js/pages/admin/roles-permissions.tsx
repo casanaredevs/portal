@@ -1,4 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
+import { adminPath, adminRoutes } from '@/lib/admin-routes';
 import type { PermissionString } from '@/lib/permissions.generated';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -103,7 +104,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
     useEffect(() => {
         // Navegar cuando cambien filtros (debounced)
         router.get(
-            '/dashboard/admin/roles-permissions',
+            adminRoutes.rolesPermissions(),
             { search: debouncedSearch, per_page: perPage },
             { preserveState: true, preserveScroll: true, replace: true },
         );
@@ -137,7 +138,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
     const saveRole = () => {
         if (!selectedRole) return;
         router.post(
-            `/dashboard/admin/roles/${selectedRole.id}/permissions`,
+            `${adminPath('roles')}/${selectedRole.id}/permissions`,
             { permissions: selectedRole.permissions },
             { preserveScroll: true },
         );
@@ -178,7 +179,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
     const saveUserRoles = () => {
         if (!selectedUser) return;
         if (removingAdminWouldBreak) return; // front guard
-        post(`/dashboard/admin/users/${selectedUser.id}/roles`, {
+        post(`${adminPath('users')}/${selectedUser.id}/roles`, {
             preserveScroll: true,
         });
     };
@@ -214,7 +215,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
     const submitBulk = () => {
         if (bulkDisabled) return;
         router.post(
-            '/dashboard/admin/users/bulk/roles',
+            adminPath('users/bulk/roles'),
             {
                 user_ids: selectedIds,
                 roles: bulkRoles,
@@ -235,11 +236,8 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
     // Breadcrumbs
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Dashboard', href: dashboard().url },
-        { title: 'Administración', href: '/dashboard/admin/roles-permissions' },
-        {
-            title: 'Roles & Permisos',
-            href: '/dashboard/admin/roles-permissions',
-        },
+        { title: 'Administración', href: adminPath() },
+        { title: 'Roles & Permisos', href: adminRoutes.rolesPermissions() },
     ];
 
     return (

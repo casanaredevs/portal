@@ -142,6 +142,7 @@ Route::middleware(['auth','verified','permission:users.manage'])
     ->prefix('dashboard/admin')
     ->name('admin.')
     ->group(function() {
+        Route::get('/', fn() => redirect()->route('admin.roles-permissions.index'))->name('index');
         Route::get('/roles-permissions', [\App\Http\Controllers\Admin\RolePermissionController::class,'index'])->name('roles-permissions.index');
         Route::post('/users/bulk/roles', [\App\Http\Controllers\Admin\RolePermissionController::class,'bulkUserRoles'])->name('roles-permissions.users.bulk');
         Route::post('/roles/{role}/permissions', [\App\Http\Controllers\Admin\RolePermissionController::class,'syncRolePermissions'])->name('roles-permissions.roles.sync');

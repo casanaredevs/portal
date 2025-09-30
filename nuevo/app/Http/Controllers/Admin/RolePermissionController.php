@@ -71,6 +71,11 @@ class RolePermissionController extends Controller
             ],
             'filters' => [ 'search' => $search, 'per_page' => $perPage ],
             'admins_count' => $adminsCount,
+            'breadcrumbs' => [
+                [ 'title' => 'Dashboard', 'href' => route('dashboard') ],
+                [ 'title' => 'Administración', 'href' => route('admin.index') ],
+                [ 'title' => 'Roles & Permisos', 'href' => route('admin.roles-permissions.index') ],
+            ],
         ];
 
         if ($request->wantsJson()) {
