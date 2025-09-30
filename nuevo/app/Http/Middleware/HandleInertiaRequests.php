@@ -38,14 +38,35 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        $user = $request->user();
+        $auth = ['user' => null];
+        if ($user) {
+            $auth['user'] = [
+                'id' => $user->id,
+                'username' => $user->username,
+                'name' => $user->name,
+                'display_name' => $user->display_name,
+                'email' => $user->email,
+                'avatar_url' => $user->avatar_url,
+                'bio' => $user->bio,
+                'about' => $user->about,
+                'location_city' => $user->location_city,
+                'location_country' => $user->location_country,
+                'availability' => $user->availability,
+                'privacy' => $user->privacy,
+                'is_featured' => $user->is_featured,
+            ];
+            // Roles & permisos (arrays planos)
+            $auth['roles'] = $user->getRoleNames()->toArray();
+            $auth['permissions'] = $user->getAllPermissions()->pluck('name')->values()->toArray();
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
-            'auth' => [
-                'user' => $request->user(),
-            ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'auth' => $auth,
+            'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }
 }

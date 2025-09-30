@@ -17,6 +17,10 @@ class RolePermissionController extends Controller
 {
     public function index(Request $request)
     {
+        $search = $request->string('search')->trim()->value();
+        $perPage = (int) $request->get('per_page', 25);
+        $perPage = $perPage > 100 ? 100 : ($perPage < 5 ? 5 : $perPage);
+
         $roles = Role::with('permissions')->orderBy('name')->get()->map(fn($r) => [
             'id' => $r->id,
             'name' => $r->name,
@@ -32,31 +36,48 @@ class RolePermissionController extends Controller
                 'category' => $meta[$c->value]['category'] ?? 'General',
             ])->values()->all();
 
-        // Usuarios (simple listado paginado básico: primeros 25, con roles)
-        $users = User::with('roles')->limit(25)->orderBy('id')->get()->map(fn($u) => [
+        $usersQuery = User::with('roles')
+            ->when($search, function($q) use ($search) {
+                $q->where(function($qq) use ($search) {
+                    $qq->where('username','like',"%{$search}%")
+                       ->orWhere('name','like',"%{$search}%")
+                       ->orWhere('email','like',"%{$search}%");
+                });
+            })
+            ->orderBy('id');
+
+        $usersPaginator = $usersQuery->paginate($perPage)->withQueryString();
+        $usersTransformed = collect($usersPaginator->items())->map(fn($u) => [
             'id' => $u->id,
             'name' => $u->name,
             'username' => $u->username,
             'roles' => $u->roles->pluck('name')->values()->all(),
         ])->all();
 
-        if ($request->wantsJson()) {
-            return response()->json([
-                'roles' => $roles,
-                'permissions' => $permissions,
-                'permissionMeta' => $meta,
-                'roleMap' => RolePermissions::MAP,
-                'users' => $users,
-            ]);
-        }
+        $adminsCount = User::role('admin')->count();
 
-        return Inertia::render('admin/roles-permissions', [
+        $payload = [
             'roles' => $roles,
             'permissions' => $permissions,
             'permissionMeta' => $meta,
             'roleMap' => RolePermissions::MAP,
-            'users' => $users,
-        ]);
+            'users' => [
+                'data' => $usersTransformed,
+                'current_page' => $usersPaginator->currentPage(),
+                'last_page' => $usersPaginator->lastPage(),
+                'per_page' => $usersPaginator->perPage(),
+                'total' => $usersPaginator->total(),
+                'links' => $usersPaginator->linkCollection()->toArray(),
+            ],
+            'filters' => [ 'search' => $search, 'per_page' => $perPage ],
+            'admins_count' => $adminsCount,
+        ];
+
+        if ($request->wantsJson()) {
+            return response()->json($payload);
+        }
+
+        return Inertia::render('admin/roles-permissions', $payload);
     }
 
     public function syncRolePermissions(Role $role, Request $request)
@@ -99,5 +120,56 @@ class RolePermissionController extends Controller
 
         $user->syncRoles($newRoles);
         return back()->with('success', 'Roles del usuario actualizados.');
+    }
+
+    public function bulkUserRoles(Request $request)
+    {
+        $data = $request->validate([
+            'user_ids' => ['required','array','min:1'],
+            'user_ids.*' => ['integer','exists:users,id'],
+            'roles' => ['required','array','min:1'],
+            'roles.*' => ['string', Rule::in(array_keys(RolePermissions::MAP))],
+            'mode' => ['sometimes','string', Rule::in(['attach','sync'])],
+        ]);
+        $mode = $data['mode'] ?? 'attach';
+        $roles = $data['roles'];
+
+        $adminInRoles = in_array('admin',$roles,true);
+        $adminRoleId = Role::where('name','admin')->value('id');
+        $adminsBefore = User::role('admin')->count();
+
+        // If mode sync and we would remove admin from all current admins without reassigning -> block
+        if ($mode === 'sync' && !$adminInRoles) {
+            // Count how many selected users are admins; if equals total admins and no admin role kept -> block
+            $selectedAdmins = User::whereIn('id',$data['user_ids'])->role('admin')->count();
+            if ($selectedAdmins === $adminsBefore) {
+                return back()->withErrors(['roles' => 'No se puede quitar rol admin de todos los administradores.']);
+            }
+        }
+
+        $users = User::whereIn('id',$data['user_ids'])->get();
+        foreach ($users as $user) {
+            if ($mode === 'sync') {
+                // Prevent removing last admin
+                if (!$adminInRoles && $user->hasRole('admin')) {
+                    $otherAdmins = User::role('admin')->where('id','!=',$user->id)->count();
+                    if ($otherAdmins === 0) {
+                        continue; // skip this user
+                    }
+                }
+                $user->syncRoles($roles);
+            } else { // attach
+                foreach ($roles as $roleName) {
+                    if ($roleName === 'admin' && !$user->hasRole('admin')) {
+                        // simple assign
+                        $user->assignRole('admin');
+                    } else {
+                        if (!$user->hasRole($roleName)) $user->assignRole($roleName);
+                    }
+                }
+            }
+        }
+
+        return back()->with('success','Roles aplicados a usuarios seleccionados.');
     }
 }

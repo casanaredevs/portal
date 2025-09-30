@@ -1,3 +1,4 @@
+import { AdminMenu } from '@/components/admin-menu';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Icon } from '@/components/icon';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -28,11 +29,12 @@ import {
 } from '@/components/ui/tooltip';
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
+import { usePermissions } from '@/lib/permissions';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { LayoutGrid, Menu, Search } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
@@ -45,16 +47,16 @@ const mainNavItems: NavItem[] = [
 ];
 
 const rightNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
+    // {
+    //     title: 'Repository',
+    //     href: 'https://github.com/laravel/react-starter-kit',
+    //     icon: Folder,
+    // },
+    // {
+    //     title: 'Documentation',
+    //     href: 'https://laravel.com/docs/starter-kits#react',
+    //     icon: BookOpen,
+    // },
 ];
 
 const activeItemStyles =
@@ -68,6 +70,12 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const getInitials = useInitials();
+    const { can } = usePermissions();
+
+    // Construir items admin basados en permisos disponibles
+    // (Extraído a AdminMenu, se mantiene showAdminMenu para condicional rápido)
+    const showAdminMenu = true; // AdminMenu internamente filtra por permisos
+
     return (
         <>
             <div className="border-b border-sidebar-border/80">
@@ -112,6 +120,10 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                     <span>{item.title}</span>
                                                 </Link>
                                             ))}
+                                            <AdminMenu
+                                                variant="list"
+                                                className="border-t border-neutral-200 pt-2 dark:border-neutral-700"
+                                            />
                                         </div>
 
                                         <div className="flex flex-col space-y-4">
@@ -200,6 +212,8 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             >
                                 <Search className="!size-5 opacity-80 group-hover:opacity-100" />
                             </Button>
+                            {/* Menú Admin (desktop) */}
+                            {showAdminMenu && <AdminMenu />}
                             <div className="hidden lg:flex">
                                 {rightNavItems.map((item) => (
                                     <TooltipProvider
@@ -246,7 +260,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 >
                                     <Avatar className="size-8 overflow-hidden rounded-full">
                                         <AvatarImage
-                                            src={auth.user.avatar}
+                                            src={auth.user.avatar_url}
                                             alt={auth.user.name}
                                         />
                                         <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
