@@ -30,7 +30,7 @@ class RolesPermissionsBulkAndSearchTest extends TestCase
         for ($i=0;$i<5;$i++) { User::factory()->create(['username' => 'alpha-'.$i.'-'.Str::lower(Str::random(6))]); }
         for ($i=0;$i<3;$i++) { User::factory()->create(['username' => 'beta-'.$i.'-'.Str::lower(Str::random(6))]); }
 
-        $resp = $this->actingAsAdmin()->getJson('/admin/roles-permissions?search=beta');
+        $resp = $this->actingAsAdmin()->getJson('/dashboard/admin/roles-permissions?search=beta');
         $resp->assertOk();
         $data = $resp->json('users.data');
         $this->assertNotEmpty($data);
@@ -40,7 +40,7 @@ class RolesPermissionsBulkAndSearchTest extends TestCase
     public function test_pagination_per_page_limit(): void
     {
         User::factory()->count(40)->create();
-        $resp = $this->actingAsAdmin()->getJson('/admin/roles-permissions?per_page=10');
+        $resp = $this->actingAsAdmin()->getJson('/dashboard/admin/roles-permissions?per_page=10');
         $resp->assertOk();
         $this->assertCount(10, $resp->json('users.data'));
         $this->assertEquals(10, $resp->json('users.per_page'));

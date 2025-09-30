@@ -16,13 +16,13 @@ class RolesPermissionsAdminUiTest extends TestCase
 
     public function test_guest_cannot_access_admin_page(): void
     {
-        $this->get('/admin/roles-permissions')->assertRedirect('/login');
+        $this->get('/dashboard/admin/roles-permissions')->assertRedirect('/login');
     }
 
     public function test_member_without_permission_gets_403(): void
     {
         $user = User::factory()->create(); // rol member por defecto, no tiene users.manage
-        $this->actingAs($user)->get('/admin/roles-permissions')->assertStatus(403);
+        $this->actingAs($user)->get('/dashboard/admin/roles-permissions')->assertStatus(403);
     }
 
     public function test_admin_can_view_admin_page(): void
@@ -30,7 +30,7 @@ class RolesPermissionsAdminUiTest extends TestCase
         $admin = User::role('admin')->first() ?? User::factory()->create();
         if (!$admin->hasRole('admin')) { $admin->assignRole('admin'); }
         $response = $this->actingAs($admin)
-            ->getJson('/admin/roles-permissions');
+            ->getJson('/dashboard/admin/roles-permissions');
         $response->assertOk();
         $response->assertJsonStructure(['roles','permissions','permissionMeta','roleMap','users']);
     }

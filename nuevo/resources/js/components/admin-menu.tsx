@@ -25,7 +25,7 @@ interface AdminLink {
 const ADMIN_LINKS: AdminLink[] = [
     {
         title: 'Roles & Permisos',
-        href: '/admin/roles-permissions',
+        href: '/dashboard/admin/roles-permissions',
         perm: 'users.manage',
         icon: KeyRound,
     },
