@@ -119,6 +119,18 @@ Agregar atributos `data-test="..."` en componentes interactivos críticos si se 
 - Tailwind 4; usar clases utilitarias + primitivas Radix/Headless UI encapsuladas.
 - `components/ui/*` contiene wrappers (Button, Input, etc.). Reutilizar en lugar de recrear.
 - Orden de clases: Prettier plugin tailwindcss normaliza (evitar reorganizar manualmente).
+- Referencia de estilo obligatoria: antes de introducir o modificar tipografía, espaciado, chips, badges o tamaños pequeños, leer y cumplir `ADMIN-STYLE.md`.
+  - Para tamaño 0.625rem usar sólo la utilidad personalizada `text-micro` (prohibido `text-[0.625rem]`).
+  - Evitar nuevos valores arbitrarios de tipografía (`text-[...px|rem]`) salvo justificación documentada.
+  - Unificar tamaños pequeños en `text-xs` o `text-micro` según la guía.
+
+### 7.1 Resumen Rápido (ADMIN-STYLE)
+| Caso | Regla |
+|------|-------|
+| Micro tipografía | Usar `text-micro` (no `text-[0.625rem]`) |
+| Arbitrarios tipografía | Evitar; usar escala existente (`text-xs`, `text-sm`, etc.) |
+| Valores < 0.625rem | No introducir |
+| Revisión PR | Verificar ausencia de `text-[0.625rem]` |
 
 ---
 ## 8. SSR (Opcional)
@@ -164,12 +176,16 @@ Do:
 - Validar con `composer test` y `npm run types`.
 - Seguir patrón de títulos con `<Head>`.
 - Añadir `data-test` a botones form críticos.
+- CONSULTAR y RESPETAR `ADMIN-STYLE.md` antes de modificar clases Tailwind / tipografía / espaciados / badges.
+- Reemplazar cualquier `text-[0.625rem]` encontrado por `text-micro`.
 
 Don't:
 - Reescribir masivamente archivos no relacionados.
 - Duplicar lógica de validación en controladores (usar FormRequest).
 - Hardcodear URLs cuando existen helpers generados.
 - Eliminar comentarios @see/@route generados (se usan como metadata).
+- Introducir `text-[...rem|px]` para tipografía cuando exista una utilidad estándar o `text-micro`.
+- Ignorar `ADMIN-STYLE.md` en cambios de UI.
 
 ---
 ## 13. Comandos Útiles (Windows cmd)
@@ -246,4 +262,3 @@ Usa Inertia + helpers generados de Wayfinder, mantén validaciones en FormReques
 
 ---
 Documento mantenible: actualiza este archivo cuando cambien convenciones clave.
-
