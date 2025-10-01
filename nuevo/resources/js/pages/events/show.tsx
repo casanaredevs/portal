@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import PublicLayout from '@/layouts/public/public-layout';
 import type { SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -167,18 +168,26 @@ export default function EventShow() {
                 )}
                 <div className="rounded-2xl border border-neutral-200 bg-white/70 p-6 backdrop-blur-sm sm:p-10 dark:border-neutral-800 dark:bg-neutral-900/60">
                     <div className="mb-6 flex flex-wrap items-center gap-3">
-                        <span className="inline-flex items-center rounded-full border border-fuchsia-300/60 bg-fuchsia-50 px-3 py-1 text-xs font-semibold tracking-wide text-fuchsia-700 dark:border-fuchsia-600/40 dark:bg-fuchsia-900/30 dark:text-fuchsia-300">
+                        <Badge
+                            variant="brand"
+                            size="sm"
+                            className="px-3 py-1 font-semibold"
+                        >
                             {typeLabel(event.type)}
-                        </span>
+                        </Badge>
                         <span className="text-xs font-medium tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
                             {event.status === 'published'
                                 ? 'Publicado'
                                 : event.status}
                         </span>
                         {localRegistered && (
-                            <span className="inline-flex items-center rounded-full border border-green-400/50 bg-green-50 px-3 py-1 text-[10px] font-semibold tracking-wide text-green-700 dark:border-green-600/40 dark:bg-green-900/30 dark:text-green-300">
+                            <Badge
+                                variant="success"
+                                size="sm"
+                                className="px-3 py-1 font-semibold"
+                            >
                                 Registrado
-                            </span>
+                            </Badge>
                         )}
                     </div>
                     <h1 className="mb-4 text-3xl leading-tight font-bold tracking-tight text-balance text-neutral-900 sm:text-4xl dark:text-neutral-50">
@@ -212,7 +221,7 @@ export default function EventShow() {
                     </div>
                     {event.capacity !== null && (
                         <div className="mb-8">
-                            <div className="mb-1 flex items-center justify-between text-[11px] text-neutral-500 dark:text-neutral-400">
+                            <div className="mb-1 flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
                                 <span>
                                     {atCapacity && !localRegistered
                                         ? 'Aforo completo'

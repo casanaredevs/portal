@@ -133,7 +133,7 @@ const CollapsibleCategory: React.FC<CollapsibleCategoryProps> = ({
                                     <span className="block font-medium text-neutral-800 dark:text-neutral-200">
                                         {p.label}
                                     </span>
-                                    <span className="block font-mono text-[10px] text-neutral-500">
+                                    <span className="block font-mono text-xs text-neutral-500">
                                         {p.name}
                                     </span>
                                 </span>
@@ -525,7 +525,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                                     )}
                                 </div>
 
-                                <div className="flex max-h-[560px] flex-col gap-4 overflow-auto pr-1">
+                                <div className="flex max-h-96 flex-col gap-4 overflow-auto pr-1">
                                     {permsByCategory.map(([cat, perms]) => (
                                         <CollapsibleCategory
                                             key={cat}
@@ -693,7 +693,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                         </div>
 
                         <div className="overflow-hidden rounded border bg-white/70 dark:border-neutral-700 dark:bg-neutral-900/60">
-                            <div className="max-h-[440px] overflow-auto">
+                            <div className="max-h-96 overflow-auto">
                                 <table className="w-full text-sm">
                                     <thead className="sticky top-0 bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                                         <tr>

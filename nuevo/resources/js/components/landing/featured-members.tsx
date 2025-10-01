@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import React, { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 
 export interface FeaturedTechnology {
     id: number;
@@ -25,9 +26,11 @@ interface FeaturedMembersProps {
 
 function TechChip({ tech }: { tech: FeaturedTechnology }) {
     return (
-        <span
+        <Badge
             title={tech.name}
-            className="inline-flex items-center gap-1 rounded-md border border-neutral-300/60 bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+            variant="neutral"
+            size="sm"
+            className="gap-1 font-medium border border-neutral-300/60 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
         >
             {tech.icon ? (
                 <img
@@ -37,12 +40,12 @@ function TechChip({ tech }: { tech: FeaturedTechnology }) {
                     loading="lazy"
                 />
             ) : (
-                <span className="flex h-3 w-3 items-center justify-center rounded bg-fuchsia-500/70 text-[8px] leading-3 font-bold text-white dark:bg-fuchsia-400/70">
+                <span className="flex h-3 w-3 items-center justify-center rounded bg-fuchsia-500/70 text-[9px] leading-3 font-bold text-white dark:bg-fuchsia-400/70">
                     {tech.name.charAt(0).toUpperCase()}
                 </span>
             )}
             {tech.name}
-        </span>
+        </Badge>
     );
 }
 
@@ -95,12 +98,14 @@ export const FeaturedMembers: React.FC<FeaturedMembersProps> = ({
                                     fullWidth
                                 />
                                 {m.is_featured && (
-                                    <span
-                                        className="absolute top-1 right-1 inline-flex items-center rounded-full border border-amber-400/60 bg-amber-50 px-2 py-0.5 text-[9px] font-semibold tracking-wide text-amber-700 uppercase shadow dark:border-amber-500/40 dark:bg-amber-900/60 dark:text-amber-200"
+                                    <Badge
+                                        variant="warning"
+                                        size="sm"
+                                        className="absolute top-1 right-1 uppercase tracking-wide font-semibold shadow"
                                         title="Destacado por la comunidad"
                                     >
                                         ⭐
-                                    </span>
+                                    </Badge>
                                 )}
                             </div>
                             <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-neutral-900 dark:text-neutral-50">
@@ -112,7 +117,7 @@ export const FeaturedMembers: React.FC<FeaturedMembersProps> = ({
                                 </Link>
                             </h3>
                             {m.bio && (
-                                <p className="mb-3 line-clamp-3 text-[11px] leading-snug text-neutral-600 dark:text-neutral-400">
+                                <p className="mb-3 line-clamp-3 text-sm leading-snug text-neutral-600 dark:text-neutral-400">
                                     {m.bio}
                                 </p>
                             )}
@@ -121,7 +126,7 @@ export const FeaturedMembers: React.FC<FeaturedMembersProps> = ({
                                     <TechChip key={t.id} tech={t} />
                                 ))}
                                 {m.technologies.length === 0 && (
-                                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                                    <span className="text-xs text-neutral-400 dark:text-neutral-500">
                                         Sin tecnologías públicas
                                     </span>
                                 )}
@@ -129,7 +134,7 @@ export const FeaturedMembers: React.FC<FeaturedMembersProps> = ({
                             <div className="mt-auto">
                                 <Link
                                     href={`/u/${m.username}`}
-                                    className="inline-flex w-full items-center justify-center rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-medium text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                                    className="inline-flex w-full items-center justify-center rounded-md border border-neutral-300 bg-white px-2 py-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
                                 >
                                     Ver perfil
                                 </Link>
@@ -174,9 +179,7 @@ const AvatarSquare: React.FC<AvatarSquareProps> = ({
                 </div>
             )}
             {url && errored && (
-                <span className="absolute inset-x-0 bottom-0 bg-red-500/80 px-1 py-0.5 text-[9px] font-medium tracking-wide text-white">
-                    ERR
-                </span>
+                <Badge variant="danger" size="sm" className="absolute inset-x-0 bottom-0 !rounded-none px-1 py-0.5 text-xs tracking-wide">ERR</Badge>
             )}
         </div>
     );

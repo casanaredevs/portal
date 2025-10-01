@@ -637,7 +637,7 @@ const AdminEventsPage: React.FC = () => {
                                             <td className="px-3 py-2 text-center text-xs">
                                                 {ev.seats_taken}
                                                 {ev.capacity ? (
-                                                    <span className="text-[10px] text-neutral-500">
+                                                    <span className="text-xs text-neutral-500">
                                                         /{ev.capacity}
                                                     </span>
                                                 ) : (
@@ -672,7 +672,7 @@ const AdminEventsPage: React.FC = () => {
                                                         ))}
                                                     </select>
                                                 ) : (
-                                                    <span className="rounded bg-neutral-200 px-2 py-0.5 text-[10px] font-medium capitalize dark:bg-neutral-700">
+                                                    <span className="rounded bg-neutral-200 px-2 py-0.5 text-xs font-medium capitalize dark:bg-neutral-700">
                                                         {ev.status}
                                                     </span>
                                                 )}

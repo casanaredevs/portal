@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import PublicLayout from '@/layouts/public/public-layout';
 import type { SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -62,9 +63,13 @@ const MemberAvatar: React.FC<{
                 </div>
             )}
             {url && err && (
-                <span className="absolute inset-x-0 bottom-0 bg-red-500/80 px-1 py-0.5 text-[9px] font-medium text-white">
+                <Badge
+                    variant="danger"
+                    size="sm"
+                    className="absolute inset-x-0 bottom-0 !rounded-none px-1 py-0.5 text-xs text-white"
+                >
                     ERR
-                </span>
+                </Badge>
             )}
         </div>
     );
@@ -75,9 +80,13 @@ const MemberCard: React.FC<{ m: MemberItem }> = ({ m }) => (
         <div className="relative mb-3">
             <MemberAvatar url={m.avatar_url} name={m.display_name} fullWidth />
             {m.is_featured && (
-                <span className="absolute top-1 right-1 inline-flex items-center rounded-full border border-amber-400/60 bg-amber-50 px-2 py-0.5 text-[9px] font-semibold tracking-wide text-amber-700 uppercase dark:border-amber-500/40 dark:bg-amber-900/60 dark:text-amber-200">
+                <Badge
+                    variant="warning"
+                    size="sm"
+                    className="absolute top-1 right-1 font-semibold tracking-wide uppercase"
+                >
                     ★
-                </span>
+                </Badge>
             )}
         </div>
         <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-neutral-900 dark:text-neutral-50">
@@ -89,15 +98,17 @@ const MemberCard: React.FC<{ m: MemberItem }> = ({ m }) => (
             </Link>
         </h3>
         {m.bio && (
-            <p className="mb-3 line-clamp-3 text-[11px] leading-snug text-neutral-600 dark:text-neutral-400">
+            <p className="mb-3 line-clamp-3 text-sm leading-snug text-neutral-600 dark:text-neutral-400">
                 {m.bio}
             </p>
         )}
         <div className="mb-4 flex flex-wrap gap-1.5">
             {m.technologies.slice(0, 6).map((t) => (
-                <span
+                <Badge
                     key={t.id}
-                    className="inline-flex items-center gap-1 rounded-md border border-neutral-300/60 bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                    variant="neutral"
+                    size="sm"
+                    className="gap-1 border border-neutral-300/60 bg-neutral-50 font-medium dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
                 >
                     {t.icon && (
                         <img
@@ -108,10 +119,10 @@ const MemberCard: React.FC<{ m: MemberItem }> = ({ m }) => (
                         />
                     )}
                     {t.name}
-                </span>
+                </Badge>
             ))}
             {m.technologies.length === 0 && (
-                <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                <span className="text-xs text-neutral-400 dark:text-neutral-500">
                     Sin tecnologías públicas
                 </span>
             )}
@@ -119,7 +130,7 @@ const MemberCard: React.FC<{ m: MemberItem }> = ({ m }) => (
         <div className="mt-auto pt-1">
             <Link
                 href={`/u/${m.username}`}
-                className="inline-flex w-full items-center justify-center rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-medium text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                className="inline-flex w-full items-center justify-center rounded-md border border-neutral-300 bg-white px-2 py-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
             >
                 Ver perfil
             </Link>

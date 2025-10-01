@@ -224,7 +224,7 @@ export default function Profile({
                                         }
                                         className="rounded border border-neutral-300 bg-white px-2 py-1 text-sm dark:border-neutral-600 dark:bg-neutral-800"
                                     />
-                                    <div className="text-right text-[10px] text-neutral-500">
+                                    <div className="text-right text-xs text-neutral-500">
                                         {form.data.bio.length}/280
                                     </div>
                                     <InputError message={form.errors.bio} />

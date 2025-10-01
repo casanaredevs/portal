@@ -49,7 +49,7 @@ export default function FaqPage() {
                         tanto, puedes unirte a un evento y plantearla
                         directamente o proponer nuevas secciones.
                     </p>
-                    <div className="flex flex-wrap gap-3 text-[11px]">
+                    <div className="flex flex-wrap gap-3 text-xs">
                         <Link
                             href="/events"
                             className="inline-flex items-center rounded-md bg-neutral-900 px-4 py-2 font-medium text-white transition hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white"

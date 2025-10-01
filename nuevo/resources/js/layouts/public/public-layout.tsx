@@ -1,4 +1,5 @@
 import AppLogo from '@/components/app-logo';
+import { Badge } from '@/components/ui/badge';
 import { publicNavItems, type PublicNavItem } from '@/config/public-nav';
 import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
@@ -77,12 +78,13 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                 >
                                     {item.label}
                                     {item.upcoming && (
-                                        <span className="ml-1 rounded bg-neutral-200 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+                                        <Badge
+                                            size="sm"
+                                            variant="neutral"
+                                            className="ml-1 font-medium tracking-wide"
+                                        >
                                             pronto
-                                        </span>
-                                    )}
-                                    {active && (
-                                        <span className="pointer-events-none absolute inset-x-2 -bottom-0.5 h-0.5 rounded-full bg-fuchsia-500 dark:bg-fuchsia-400" />
+                                        </Badge>
                                     )}
                                 </Link>
                             );
@@ -172,9 +174,13 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                     >
                                         {item.label}
                                         {item.upcoming && (
-                                            <span className="rounded bg-neutral-200 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+                                            <Badge
+                                                size="sm"
+                                                variant="neutral"
+                                                className="font-medium tracking-wide"
+                                            >
                                                 pronto
-                                            </span>
+                                            </Badge>
                                         )}
                                     </Link>
                                 );
@@ -189,7 +195,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
             <footer className="mt-24 border-t border-neutral-200 px-6 py-10 text-xs text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
                 <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p>&copy; {new Date().getFullYear()} Casanare Devs.</p>
-                    <p className="text-[11px]">
+                    <p className="text-xs">
                         Construyendo ecosistema tecnológico regional.
                     </p>
                 </div>
