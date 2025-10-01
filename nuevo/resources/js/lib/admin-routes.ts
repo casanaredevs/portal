@@ -12,6 +12,7 @@ export function adminPath(...segments: string[]): string {
 export const adminRoutes = {
     index: () => adminPath(),
     rolesPermissions: () => adminPath('roles-permissions'),
+    events: () => adminPath('events'), // nueva ruta eventos admin
 };
 
 export type AdminRouteKey = keyof typeof adminRoutes;

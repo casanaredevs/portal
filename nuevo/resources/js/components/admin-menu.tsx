@@ -11,15 +11,16 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { usePermissions } from '@/lib/permissions';
 import { adminRoutes } from '@/lib/admin-routes';
+import { usePermissions } from '@/lib/permissions';
 import { KeyRound, Shield } from 'lucide-react';
 import React from 'react';
 
 interface AdminLink {
     title: string;
     href: string;
-    perm: string;
+    perm?: string; // single required perm
+    anyPerms?: string[]; // mostrar si tiene cualquiera
     icon?: any;
 }
 
@@ -29,6 +30,17 @@ const ADMIN_LINKS: AdminLink[] = [
         href: adminRoutes.rolesPermissions(),
         perm: 'users.manage',
         icon: KeyRound,
+    },
+    {
+        title: 'Eventos',
+        href: adminRoutes.events(),
+        anyPerms: [
+            'events.create',
+            'events.edit',
+            'events.delete',
+            'events.publish',
+        ],
+        icon: Shield,
     },
 ];
 
@@ -44,7 +56,11 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({
     heading = 'Administración',
 }) => {
     const { can } = usePermissions();
-    const items = ADMIN_LINKS.filter((l) => can(l.perm));
+    const items = ADMIN_LINKS.filter((l) => {
+        if (l.perm) return can(l.perm);
+        if (l.anyPerms) return l.anyPerms.some((p) => can(p));
+        return false;
+    });
     if (items.length === 0) return null;
 
     if (variant === 'list') {

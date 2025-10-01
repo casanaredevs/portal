@@ -8,6 +8,7 @@ use App\Http\Controllers\PublicEventController;
 use App\Http\Controllers\PublicMetricsController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TechnologyController;
+use App\Http\Controllers\Admin\EventAdminController; // añadido
 use App\Models\Event;
 use App\Models\Technology;
 use App\Models\User;
@@ -147,6 +148,17 @@ Route::middleware(['auth','verified','permission:users.manage'])
         Route::post('/users/bulk/roles', [\App\Http\Controllers\Admin\RolePermissionController::class,'bulkUserRoles'])->name('roles-permissions.users.bulk');
         Route::post('/roles/{role}/permissions', [\App\Http\Controllers\Admin\RolePermissionController::class,'syncRolePermissions'])->name('roles-permissions.roles.sync');
         Route::post('/users/{user}/roles', [\App\Http\Controllers\Admin\RolePermissionController::class,'syncUserRoles'])->name('roles-permissions.users.sync');
+    });
+
+// Grupo administración de eventos (permiso granular, no requiere users.manage)
+Route::middleware(['auth','verified','permission:events.create|events.edit|events.delete|events.publish'])
+    ->prefix('dashboard/admin/events')
+    ->name('admin.events.')
+    ->group(function() {
+        Route::get('/', [EventAdminController::class,'index'])->name('index');
+        Route::post('/', [EventAdminController::class,'store'])->name('store');
+        Route::patch('/{event}', [EventAdminController::class,'update'])->name('update');
+        Route::delete('/{event}', [EventAdminController::class,'destroy'])->name('destroy');
     });
 
 require __DIR__.'/settings.php';
