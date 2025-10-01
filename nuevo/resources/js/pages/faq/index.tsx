@@ -29,7 +29,7 @@ export default function FaqPage() {
                             <summary className="cursor-pointer list-none font-semibold text-neutral-900 transition outline-none select-none focus-visible:ring-2 focus-visible:ring-fuchsia-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:text-neutral-50 dark:focus-visible:ring-offset-neutral-900">
                                 <span className="flex items-center justify-between gap-4">
                                     {item.question}
-                                    <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-md border border-neutral-300 text-[11px] font-medium text-neutral-500 transition group-open:rotate-45 dark:border-neutral-700 dark:text-neutral-400">
+                                    <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-md border border-neutral-300 text-xs font-medium text-neutral-500 transition group-open:rotate-45 dark:border-neutral-700 dark:text-neutral-400">
                                         +
                                     </span>
                                 </span>

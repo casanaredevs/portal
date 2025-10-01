@@ -39,7 +39,7 @@ export const FaqPreview: React.FC<{ className?: string; limit?: number }> = ({
                         <summary className="cursor-pointer list-none font-semibold text-neutral-800 transition outline-none select-none focus-visible:ring-2 focus-visible:ring-fuchsia-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:text-neutral-100 dark:focus-visible:ring-offset-neutral-900">
                             <span className="flex items-center justify-between gap-4">
                                 {item.question}
-                                <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-md border border-neutral-300 text-[10px] font-medium text-neutral-500 transition group-open:rotate-45 dark:border-neutral-700 dark:text-neutral-400">
+                                <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-md border border-neutral-300 text-[0.625rem] font-medium text-neutral-500 transition group-open:rotate-45 dark:border-neutral-700 dark:text-neutral-400">
                                     +
                                 </span>
                             </span>
@@ -58,7 +58,7 @@ export const FaqPreview: React.FC<{ className?: string; limit?: number }> = ({
             <div className="mt-6 text-right">
                 <Link
                     href="/faq"
-                    className="inline-flex items-center text-[11px] font-medium text-neutral-600 underline decoration-neutral-300 underline-offset-4 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100"
+                    className="inline-flex items-center text-xs font-medium text-neutral-600 underline decoration-neutral-300 underline-offset-4 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100"
                 >
                     Página completa de preguntas frecuentes →
                 </Link>

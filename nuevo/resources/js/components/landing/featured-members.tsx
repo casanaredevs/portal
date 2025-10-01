@@ -40,7 +40,7 @@ function TechChip({ tech }: { tech: FeaturedTechnology }) {
                     loading="lazy"
                 />
             ) : (
-                <span className="flex h-3 w-3 items-center justify-center rounded bg-fuchsia-500/70 text-[9px] leading-3 font-bold text-white dark:bg-fuchsia-400/70">
+                <span className="flex h-3 w-3 items-center justify-center rounded bg-fuchsia-500/70 text-[0.625rem] leading-3 font-bold text-white dark:bg-fuchsia-400/70">
                     {tech.name.charAt(0).toUpperCase()}
                 </span>
             )}

@@ -81,7 +81,7 @@ export function Hero({ isAuthenticated, userName }: HeroProps) {
                                     charlas, talleres y proyectos colaborativos
                                     con tecnologías modernas.
                                 </p>
-                                <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] font-medium tracking-wide text-neutral-500 dark:text-neutral-400">
+                                <div className="flex flex-wrap items-center justify-center gap-2 text-[0.625rem] font-medium tracking-wide text-neutral-500 dark:text-neutral-400">
                                     <span className="rounded-full bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50">
                                         JavaScript
                                     </span>
@@ -102,7 +102,7 @@ export function Hero({ isAuthenticated, userName }: HeroProps) {
                         </div>
                         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.4),transparent_60%)] dark:bg-[radial-gradient(circle_at_30%_30%,rgba(0,0,0,0.35),transparent_60%)]" />
                     </div>
-                    <p className="mt-3 text-center text-[11px] text-neutral-400 dark:text-neutral-500">
+                    <p className="mt-3 text-center text-xs text-neutral-400 dark:text-neutral-500">
                         Próximamente: contenido dinámico desde la base de datos.
                     </p>
                 </div>

@@ -96,7 +96,7 @@ export const JoinParticipate: React.FC<JoinParticipateProps> = ({
                         experiencia. Todas las rutas impulsan aprendizaje,
                         colaboración y visibilidad profesional.
                     </p>
-                    <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+                    <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[0.6875rem] font-medium text-neutral-500 dark:text-neutral-400">
                         <li>Networking real</li>
                         <li>Aprendizaje colaborativo</li>
                         <li>Portafolio con propósito</li>
@@ -146,7 +146,7 @@ export const JoinParticipate: React.FC<JoinParticipateProps> = ({
                             {p.description}
                         </p>
                         {p.benefits && (
-                            <ul className="mb-4 space-y-1 text-[11px] font-medium text-neutral-600 dark:text-neutral-400">
+                            <ul className="mb-4 space-y-1 text-[0.6875rem] font-medium text-neutral-600 dark:text-neutral-400">
                                 {p.benefits.map((b) => (
                                     <li
                                         key={b}
@@ -162,7 +162,7 @@ export const JoinParticipate: React.FC<JoinParticipateProps> = ({
                             <Link
                                 href={p.ctaHref || '#'}
                                 className={
-                                    'inline-flex items-center rounded-md px-3 py-1.5 text-[11px] font-medium transition ' +
+                                    'inline-flex items-center rounded-md px-3 py-1.5 text-[0.6875rem] font-medium transition ' +
                                     (p.key === 'projects' ||
                                     p.key === 'knowledge' ||
                                     p.key === 'mentoring'
@@ -182,7 +182,7 @@ export const JoinParticipate: React.FC<JoinParticipateProps> = ({
                 ))}
             </div>
 
-            <div className="mt-10 rounded-lg border border-neutral-200 bg-white p-6 text-[13px] leading-relaxed dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="mt-10 rounded-lg border border-neutral-200 bg-white p-6 text-[0.8125rem] leading-relaxed dark:border-neutral-800 dark:bg-neutral-900">
                 <h3 className="mb-2 text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
                     Requisitos mínimos y filosofía
                 </h3>

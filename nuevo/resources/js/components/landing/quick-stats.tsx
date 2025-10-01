@@ -132,7 +132,7 @@ export function QuickStats({
                         );
                     })}
                 </dl>
-                <div className="mt-5 flex flex-wrap items-center gap-3 text-[11px] text-neutral-500 dark:text-neutral-400">
+                <div className="mt-5 flex flex-wrap items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
                     <span>Cifras aproximadas – actualización automática.</span>
                     {refreshing && (
                         <span className="inline-flex items-center gap-1 text-fuchsia-600 dark:text-fuchsia-400">
