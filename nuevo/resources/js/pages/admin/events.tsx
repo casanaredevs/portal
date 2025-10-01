@@ -186,7 +186,7 @@ const AdminEventsPage: React.FC = () => {
 
     const legend = useMemo(
         () => (
-            <div className="flex flex-wrap gap-4 text-[11px] text-neutral-500 dark:text-neutral-400">
+            <div className="flex flex-wrap gap-4 text-sm text-neutral-500 dark:text-neutral-400">
                 <span>Total: {pagination.total}</span>
                 {search && <span>Búsqueda: "{search}"</span>}
             </div>
@@ -211,7 +211,7 @@ const AdminEventsPage: React.FC = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-4 rounded border border-neutral-200 bg-white/70 p-4 dark:border-neutral-800 dark:bg-neutral-900/60">
-                    <div className="flex flex-col text-xs">
+                    <div className="flex flex-col text-sm">
                         <label className="mb-1 font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
                             Buscar
                         </label>
@@ -219,10 +219,10 @@ const AdminEventsPage: React.FC = () => {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Título o resumen"
-                            className="rounded border border-neutral-300 bg-white px-2 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-800"
+                            className="rounded border border-neutral-300 bg-white px-2 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-800"
                         />
                     </div>
-                    <div className="flex flex-col text-xs">
+                    <div className="flex flex-col text-sm">
                         <label className="mb-1 font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
                             Estado
                         </label>
@@ -232,7 +232,7 @@ const AdminEventsPage: React.FC = () => {
                                 setStatus(e.target.value);
                                 applyFilters();
                             }}
-                            className="rounded border border-neutral-300 bg-white px-2 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-800"
+                            className="rounded border border-neutral-300 bg-white px-2 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-800"
                         >
                             {STATUS_OPTIONS.map((s) => (
                                 <option key={s} value={s}>
@@ -241,7 +241,7 @@ const AdminEventsPage: React.FC = () => {
                             ))}
                         </select>
                     </div>
-                    <div className="flex flex-col text-xs">
+                    <div className="flex flex-col text-sm">
                         <label className="mb-1 font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
                             Tipo
                         </label>
@@ -251,7 +251,7 @@ const AdminEventsPage: React.FC = () => {
                                 setType(e.target.value);
                                 applyFilters();
                             }}
-                            className="rounded border border-neutral-300 bg-white px-2 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-800"
+                            className="rounded border border-neutral-300 bg-white px-2 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-800"
                         >
                             {TYPE_OPTIONS.map((s) => (
                                 <option key={s} value={s}>
@@ -260,7 +260,7 @@ const AdminEventsPage: React.FC = () => {
                             ))}
                         </select>
                     </div>
-                    <div className="flex flex-col text-xs">
+                    <div className="flex flex-col text-sm">
                         <label className="mb-1 font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
                             Cuándo
                         </label>
@@ -270,7 +270,7 @@ const AdminEventsPage: React.FC = () => {
                                 setWhen(e.target.value);
                                 applyFilters();
                             }}
-                            className="rounded border border-neutral-300 bg-white px-2 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-800"
+                            className="rounded border border-neutral-300 bg-white px-2 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-800"
                         >
                             {WHEN_OPTIONS.map((s) => (
                                 <option key={s} value={s}>
@@ -279,7 +279,7 @@ const AdminEventsPage: React.FC = () => {
                             ))}
                         </select>
                     </div>
-                    <div className="flex flex-col text-xs">
+                    <div className="flex flex-col text-sm">
                         <label className="mb-1 font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
                             Por página
                         </label>
@@ -289,7 +289,7 @@ const AdminEventsPage: React.FC = () => {
                                 setPerPage(Number(e.target.value));
                                 applyFilters();
                             }}
-                            className="rounded border border-neutral-300 bg-white px-2 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-800"
+                            className="rounded border border-neutral-300 bg-white px-2 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-800"
                         >
                             {[10, 15, 25, 50].map((n) => (
                                 <option key={n} value={n}>
@@ -542,12 +542,12 @@ const AdminEventsPage: React.FC = () => {
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        className="w-full rounded border border-neutral-300 bg-white px-1 py-0.5 text-xs dark:border-neutral-700 dark:bg-neutral-800"
+                                                        className="w-full rounded border border-neutral-300 bg-white px-1 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-800"
                                                     />
                                                 ) : (
                                                     <div>
                                                         <div>{ev.title}</div>
-                                                        <div className="mt-0.5 line-clamp-2 text-[11px] font-normal text-neutral-500 dark:text-neutral-400">
+                                                        <div className="mt-0.5 line-clamp-2 text-sm font-normal text-neutral-500 dark:text-neutral-400">
                                                             {ev.summary}
                                                         </div>
                                                     </div>
@@ -567,7 +567,7 @@ const AdminEventsPage: React.FC = () => {
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        className="rounded border border-neutral-300 bg-white px-1 py-0.5 text-xs dark:border-neutral-700 dark:bg-neutral-800"
+                                                        className="rounded border border-neutral-300 bg-white px-1 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-800"
                                                     >
                                                         {TYPE_OPTIONS.filter(
                                                             Boolean,
@@ -601,7 +601,7 @@ const AdminEventsPage: React.FC = () => {
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        className="rounded border border-neutral-300 bg-white px-1 py-0.5 text-xs dark:border-neutral-700 dark:bg-neutral-800"
+                                                        className="rounded border border-neutral-300 bg-white px-1 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-800"
                                                     />
                                                 ) : (
                                                     formatDate(ev.start_at)
@@ -628,7 +628,7 @@ const AdminEventsPage: React.FC = () => {
                                                                     : null,
                                                             )
                                                         }
-                                                        className="w-20 rounded border border-neutral-300 bg-white px-1 py-0.5 text-xs dark:border-neutral-700 dark:bg-neutral-800"
+                                                        className="w-20 rounded border border-neutral-300 bg-white px-1 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-800"
                                                     />
                                                 ) : (
                                                     (ev.capacity ?? '—')
@@ -658,7 +658,7 @@ const AdminEventsPage: React.FC = () => {
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        className="rounded border border-neutral-300 bg-white px-1 py-0.5 text-xs capitalize dark:border-neutral-700 dark:bg-neutral-800"
+                                                        className="rounded border border-neutral-300 bg-white px-1 py-1 text-xs capitalize dark:border-neutral-700 dark:bg-neutral-800"
                                                     >
                                                         {STATUS_OPTIONS.filter(
                                                             Boolean,

@@ -345,7 +345,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
     // UI RENDER HELPERS
     const RoleLegend = hasChanges ? (
         <div className="flex flex-wrap items-center gap-4">
-            <div className="flex flex-wrap gap-3 text-[10px] text-neutral-500 dark:text-neutral-400">
+            <div className="flex flex-wrap gap-3 text-sm text-neutral-500 dark:text-neutral-400">
                 <span className="inline-flex items-center gap-1">
                     <span className="h-3 w-3 rounded bg-green-500/30 ring-1 ring-green-500/60" />{' '}
                     Añadido
@@ -355,7 +355,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                     Eliminado
                 </span>
             </div>
-            <div className="text-[11px] text-neutral-600 dark:text-neutral-400">
+            <div className="text-sm text-neutral-600 dark:text-neutral-400">
                 Permisos actuales:{' '}
                 <span className="font-medium">
                     {selectedRole?.permissions.length ?? 0}
@@ -387,7 +387,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
             </div>
         </div>
     ) : (
-        <div className="text-[11px] text-neutral-600 dark:text-neutral-400">
+        <div className="text-sm text-neutral-600 dark:text-neutral-400">
             Permisos actuales:{' '}
             <span className="font-medium">
                 {selectedRole?.permissions.length ?? 0}
@@ -467,7 +467,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                                             </span>
                                         </h2>
                                         {selectedRole.is_admin_star && (
-                                            <p className="text-[11px] text-amber-600 dark:text-amber-400">
+                                            <p className="text-sm text-amber-600 dark:text-amber-400">
                                                 Rol admin: solo lectura (ya
                                                 posee todos los permisos).
                                             </p>
@@ -476,7 +476,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {roleJustSaved && (
-                                            <span className="inline-flex items-center gap-1 rounded bg-green-600 px-2 py-1 text-[11px] font-medium text-white">
+                                            <span className="inline-flex items-center gap-1 rounded bg-green-600 px-2 py-1 text-xs font-medium text-white">
                                                 <Check className="h-3 w-3" />{' '}
                                                 Guardado
                                             </span>
@@ -550,7 +550,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-wrap items-end gap-4 rounded border bg-white/70 p-4 dark:border-neutral-700 dark:bg-neutral-900/60">
                             <div className="flex flex-col">
-                                <label className="text-[11px] font-medium tracking-wide text-neutral-500 uppercase">
+                                <label className="text-sm font-medium tracking-wide text-neutral-500 uppercase">
                                     Buscar usuarios
                                 </label>
                                 <input
@@ -563,7 +563,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                                 />
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-[11px] font-medium tracking-wide text-neutral-500 uppercase">
+                                <label className="text-sm font-medium tracking-wide text-neutral-500 uppercase">
                                     Por página
                                 </label>
                                 <select
@@ -843,7 +843,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                                     </h3>
                                     <div className="flex items-center gap-2">
                                         {userRolesJustSaved && (
-                                            <span className="inline-flex items-center gap-1 rounded bg-green-600 px-2 py-1 text-[11px] font-medium text-white">
+                                            <span className="inline-flex items-center gap-1 rounded bg-green-600 px-2 py-1 text-xs font-medium text-white">
                                                 <Check className="h-3 w-3" />{' '}
                                                 Guardado
                                             </span>
@@ -870,7 +870,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                                     </div>
                                 </div>
                                 {removingAdminWouldBreak && (
-                                    <p className="mb-2 text-[11px] text-amber-600 dark:text-amber-400">
+                                    <p className="mb-2 text-sm text-amber-600 dark:text-amber-400">
                                         No puedes remover el rol admin: sería el
                                         último administrador.
                                     </p>
