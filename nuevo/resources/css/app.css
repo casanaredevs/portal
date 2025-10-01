@@ -141,3 +141,10 @@
         @apply bg-background text-foreground;
     }
 }
+
+@layer utilities {
+    .text-micro {
+        font-size: 0.625rem; /* 10px base 16 */
+        line-height: 0.875rem; /* Ajuste compacto */
+    }
+}

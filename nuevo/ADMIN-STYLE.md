@@ -19,11 +19,12 @@ Esta guía resume los criterios de tipografía, espaciado y uso de tamaños rela
 | Body principal     | `text-base` (1rem)         | Texto de lectura normal. |
 | Body secundaria    | `text-sm` (0.875rem)       | Descripciones, meta secundaria. |
 | Meta / Soporte     | `text-xs` (0.75rem)        | Etiquetas, counters livianos. |
-| Micro (raro)       | `text-[0.625rem]` (0.625)  | Sólo para chips, badges muy compactos. Documentar uso. |
+| Micro (raro)       | `text-micro` (0.625rem)    | Sólo chips / badges densos. Prohibido usar `text-[0.625rem]` directo. |
 
 Reglas:
-- Unificar tamaños pequeños previos (9px, 10px, 11px) en `text-xs` (0.75rem) o Micro (`text-[0.625rem]`) según legibilidad.
-- No introducir nuevos tamaños arbitrarios sin revisar impacto en legibilidad (< 0.625rem se evita).
+- Unificar tamaños pequeños previos (9px, 10px, 11px) en `text-xs` (0.75rem) o `text-micro` según legibilidad.
+- No introducir nuevos tamaños arbitrarios sin revisar impacto en legibilidad (menor a 0.625rem se evita).
+- `text-[0.625rem]` queda expresamente prohibido: usar siempre `text-micro`.
 
 ## 3. Espaciado
 Usar la escala Tailwind estándar (0, 0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10, 12, 16...). Ejemplos:
@@ -53,21 +54,23 @@ Evitar `mt-[13px]` → normalizar (p.ej. `mt-3` o `mt-4`).
 |------------|----------------|-----------|-------|
 | Button (default) | `h-9 px-4` | `text-sm font-medium` | Usa variantes (default, outline, ghost...). |
 | Input / Select    | `h-9 px-3 py-2` | `text-sm` | Anillo de foco consistente. |
-| Badge (small)     | `px-2 py-0.5` | `text-[0.625rem] uppercase tracking-wide` | Sólo micro contexto. |
+| Badge (small)     | `px-2 py-0.5` | `text-micro uppercase tracking-wide` | Sólo micro contexto. |
 | Card / Panel      | `p-4` / `p-5` / `p-6` | Heading `text-base` / `text-lg` | Elevación suave (`shadow-sm`). |
 | Sidebar Items     | `p-2 h-8` | `text-sm` | Colapsables: icon-only mantiene altura. |
 
 ## 8. Micro Tipografía (Uso Estricto)
-`text-[0.625rem]` reservado para:
+`text-micro` reservado para:
 - Etiquetas muy compactas dentro de chips / badges
 - Badges de estado en listados (si el espacio es crítico)
-No usar para texto interactivo o enlaces.
+No usar para texto interactivo o enlaces. Evitarlo si `text-xs` mantiene la densidad sin perder legibilidad.
+
+Motivación: eliminado el uso directo de `text-[0.625rem]` para impedir proliferación de arbitrarios y centralizar line-height (en `app.css`).
 
 ## 9. Conversión Rápida (px → rem @16px)
 | px | rem | Adoptar |
 |----|-----|---------|
-| 9  | 0.5625 | Normalizar a 0.625 (micro) o 0.75 (xs) |
-| 10 | 0.625  | `text-[0.625rem]` (micro) o subir a `text-xs` |
+| 9  | 0.5625 | Normalizar a 0.625 (`text-micro`) o 0.75 (`text-xs`) |
+| 10 | 0.625  | `text-micro` o subir a `text-xs` si la densidad no es crítica |
 | 11 | 0.6875 | Redondear a `text-xs` (0.75) |
 | 12 | 0.75   | `text-xs` |
 
@@ -88,27 +91,29 @@ En estos casos, documentar brevemente en el PR con: `<!-- justificación: ... --
 + <div class="focus-visible:ring-2 ...">...
 
 - <span class="text-[10px] uppercase tracking-wide">meta</span>
-+ <span class="text-xs uppercase tracking-wide">meta</span>
++ <span class="text-micro uppercase tracking-wide">meta</span> (si realmente se necesita micro) o mejor subir a text-xs.
 
-- <span class="text-[9px]">X</span>
-+ <span class="text-[0.625rem]">X</span> (si realmente se necesita micro) o mejor subir a text-xs.
+- <span class="text-[0.625rem]">X</span>
++ <span class="text-micro">X</span>
 ```
 
 ## 12. Proceso para Revisar PRs
 Checklist mínimo en cada PR de UI:
-- [ ] ¿Algún `text-[Npx]` sin justificación? (rechazar)
+- [ ] ¿Algún `text-[0.625rem]`? (rechazar; reemplazar por `text-micro`)
+- [ ] ¿Algún otro `text-[...rem|px]` no documentado? (cuestionar)
 - [ ] ¿Se mantienen focus states visibles?
 - [ ] ¿Se usan variantes de componentes existentes?
 - [ ] ¿Contraste verificado (al menos manualmente) si se introducen nuevos fondos / textos?
 
+Tip: búsqueda rápida local: `grep -R "text-\[0.625rem\]" resources/js` debe devolver 0 resultados.
+
 ## 13. Próximos Ajustes Recomendados (Opcional)
-- Centralizar tokens tipográficos (crear archivo `tokens.css` o config tailwind extend).
-- Crear utilidades personalizadas (plugin) para `text-micro` (`0.625rem`) y eliminar uso directo de `text-[0.625rem]`.
+- (Hecho) Crear utilidad personalizada `text-micro` y eliminar uso directo de `text-[0.625rem]`.
+- Centralizar tokens tipográficos (crear archivo `tokens.css` o config extend si se amplía la escala).
 - Auditoría de contraste automatizada (storybook + axe) futura.
 
 ## 14. Resumen
 La meta: eliminar deuda visual y garantizar escalabilidad. Usa la escala, reutiliza componentes y justifica las excepciones. Esta guía debe mantenerse viva conforme evolucione la UI.
 
 ---
-Última actualización: (colocar fecha al actualizar)
-
+Última actualización: 2025-10-01

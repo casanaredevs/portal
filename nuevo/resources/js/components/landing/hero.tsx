@@ -81,7 +81,7 @@ export function Hero({ isAuthenticated, userName }: HeroProps) {
                                     charlas, talleres y proyectos colaborativos
                                     con tecnologías modernas.
                                 </p>
-                                <div className="flex flex-wrap items-center justify-center gap-2 text-[0.625rem] font-medium tracking-wide text-neutral-500 dark:text-neutral-400">
+                                <div className="text-micro flex flex-wrap items-center justify-center gap-2 font-medium tracking-wide text-neutral-500 dark:text-neutral-400">
                                     <span className="rounded-full bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50">
                                         JavaScript
                                     </span>
