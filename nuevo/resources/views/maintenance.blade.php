@@ -26,8 +26,31 @@
             text-align:center;
             letter-spacing:.02em;
         }
-        a.btn { display:inline-flex; align-items:center; gap:.5rem; background:#2563eb; text-decoration:none; color:#fff; font-weight:600; padding:.75rem 1.1rem; border-radius:.55rem; margin-top:1.25rem; font-size:.9rem; box-shadow:0 2px 6px -1px rgba(0,0,0,.4); width:100%; max-width:100%; white-space:normal; word-break:break-word; }
-        a.btn:hover { background:#1d4ed8; }
+        /* Botón ajustado: color menos notorio y centrado */
+        a.btn {
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:.5rem;
+            background:#334155; /* menos llamativo que el azul intenso */
+            border:1px solid #475569;
+            text-decoration:none;
+            color:#f1f5f9;
+            font-weight:500; /* menos énfasis */
+            padding:.70rem 1rem;
+            border-radius:.55rem;
+            margin:1.25rem auto 0; /* centrar */
+            font-size:.9rem;
+            box-shadow:none;
+            width:auto; /* ya no ocupa todo el ancho */
+            max-width:100%;
+            white-space:normal;
+            word-break:break-word;
+            transition:background .18s,border-color .18s,color .18s;
+        }
+        a.btn:hover { background:#475569; border-color:#5a6b7a; }
+        a.btn:active { background:#3a4b60; }
+        a.btn:focus-visible { outline:2px solid #64748b; outline-offset:2px; }
         footer { margin-top:2rem; font-size:.65rem; letter-spacing:.05em; text-transform:uppercase; opacity:.5; }
         .msg { background:#334155; padding:1rem .9rem; border-left:4px solid #fbbf24; margin:.75rem 0 1.25rem; border-radius:.35rem; font-size:.9rem; }
         /* Responsive para móviles */
@@ -39,7 +62,7 @@
             .badge { font-size:0.55rem; padding:.3rem .5rem; }
             .msg { font-size:0.9rem; padding:0.85rem 0.75rem; }
             .countdown { font-size:1.15rem; padding:.5rem .75rem; }
-            a.btn { width:100%; font-size:0.9rem; padding:.85rem 1rem; }
+            a.btn { width:auto; font-size:.9rem; padding:.75rem .95rem; }
             .card > div[style*='display:flex'][style*='flex-wrap:wrap'] { flex-direction:column; align-items:flex-start; gap:.75rem; }
         }
         /* Prefiere reducción de movimiento */
