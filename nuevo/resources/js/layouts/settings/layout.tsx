@@ -7,7 +7,7 @@ import { edit as editPassword } from '@/routes/password';
 import { edit } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
@@ -34,12 +34,9 @@ const sidebarNavItems: NavItem[] = [
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
-    // When server-side rendering, we only render the layout on the client...
-    if (typeof window === 'undefined') {
-        return null;
-    }
-
-    const currentPath = window.location.pathname;
+    // SSR friendly: obtener ruta actual desde Inertia (no usar window directamente)
+    const page = usePage();
+    const currentPath = (page.url || '').split('?')[0];
 
     return (
         <div className="px-4 py-6">
@@ -47,7 +44,6 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                 title="Settings"
                 description="Manage your profile and account settings"
             />
-
             <div className="flex flex-col lg:flex-row lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav className="flex flex-col space-y-1 space-x-0">
@@ -75,9 +71,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                         ))}
                     </nav>
                 </aside>
-
                 <Separator className="my-6 lg:hidden" />
-
                 <div className="flex-1 md:max-w-2xl">
                     <section className="max-w-xl space-y-12">
                         {children}

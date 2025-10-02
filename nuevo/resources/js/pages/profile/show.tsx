@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import AppLayout from '@/layouts/app-layout';
+import PublicLayout from '@/layouts/public/public-layout';
 import type { PageProps } from '@inertiajs/core';
 import { Head, usePage } from '@inertiajs/react';
 
@@ -46,11 +46,10 @@ export default function PublicProfileShow() {
     const title = profile.display_name || profile.name || profile.username;
 
     return (
-        <AppLayout
-            breadcrumbs={[{ title: title, href: `/u/${profile.username}` }]}
-        >
+        <PublicLayout>
             <Head title={title} />
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4">
+                {/* Encabezado del perfil público */}
                 <header className="flex flex-col gap-2 border-b pb-4 dark:border-neutral-700">
                     <h1 className="text-2xl font-semibold">{title}</h1>
                     <div className="flex flex-wrap gap-3 text-sm text-neutral-600 dark:text-neutral-400">
@@ -70,7 +69,7 @@ export default function PublicProfileShow() {
                         </p>
                     )}
                 </header>
-
+                {/* About */}
                 {profile.about && (
                     <section className="prose dark:prose-invert prose-sm max-w-none">
                         <h2 className="mb-2 text-base font-semibold">
@@ -81,7 +80,7 @@ export default function PublicProfileShow() {
                         />
                     </section>
                 )}
-
+                {/* Skills */}
                 <section>
                     <h2 className="mb-2 text-base font-semibold">Stack</h2>
                     {profile.skills.length === 0 && (
@@ -107,7 +106,7 @@ export default function PublicProfileShow() {
                             ))}
                     </ul>
                 </section>
-
+                {/* External profiles */}
                 <section>
                     <h2 className="mb-2 text-base font-semibold">
                         Perfiles externos
@@ -149,6 +148,6 @@ export default function PublicProfileShow() {
                     </ul>
                 </section>
             </div>
-        </AppLayout>
+        </PublicLayout>
     );
 }

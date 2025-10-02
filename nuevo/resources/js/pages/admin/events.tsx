@@ -1,4 +1,4 @@
-import AppLayout from '@/layouts/app-layout';
+import DashboardLayout from '@/layouts/dashboard-layout';
 import { adminRoutes } from '@/lib/admin-routes';
 import type { BreadcrumbItem } from '@/types';
 import { router, useForm, usePage } from '@inertiajs/react';
@@ -34,6 +34,7 @@ interface PageProps {
         total: number;
     };
     can: { create: boolean; edit: boolean; delete: boolean; publish: boolean };
+    [key: string]: any; // allow extra inertia props
 }
 
 const TYPE_OPTIONS = ['', 'kata', 'taller', 'meetup'];
@@ -195,7 +196,7 @@ const AdminEventsPage: React.FC = () => {
     );
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <DashboardLayout breadcrumbs={breadcrumbs}>
             <div className="space-y-6 p-4 md:p-6">
                 <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                     <div>
@@ -816,7 +817,7 @@ const AdminEventsPage: React.FC = () => {
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </DashboardLayout>
     );
 };
 

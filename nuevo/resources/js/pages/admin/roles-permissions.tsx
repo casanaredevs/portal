@@ -4,7 +4,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import AppLayout from '@/layouts/app-layout';
+import DashboardLayout from '@/layouts/dashboard-layout';
 import { adminPath, adminRoutes } from '@/lib/admin-routes';
 import type { PermissionString } from '@/lib/permissions.generated';
 import { dashboard } from '@/routes';
@@ -396,8 +396,13 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
     );
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="space-y-5 p-4 md:p-6">
+        <DashboardLayout
+            breadcrumbs={[
+                { title: 'Dashboard', href: dashboard().url },
+                { title: 'Roles & Permissions', href: adminPath('roles') },
+            ]}
+        >
+            <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 p-4">
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <h1 className="text-2xl font-bold tracking-tight">
                         Administración de Roles & Permisos
@@ -920,7 +925,7 @@ const RolesPermissionsPage: React.FC<PageProps> = (props) => {
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </DashboardLayout>
     );
 };
 
