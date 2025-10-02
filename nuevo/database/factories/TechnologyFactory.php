@@ -15,11 +15,11 @@ class TechnologyFactory extends Factory
 
     public function definition(): array
     {
-        $name = ucfirst(fake()->unique()->word());
+        $name = ucfirst($this->faker->unique()->word());
         return [
             'name' => $name,
             'slug' => Str::slug($name),
-            'category' => fake()->randomElement([
+            'category' => $this->faker->randomElement([
                 'frontend','backend','devops','mobile','data','testing','cloud'
             ]),
             'icon' => null,
@@ -28,4 +28,3 @@ class TechnologyFactory extends Factory
         ];
     }
 }
-

@@ -16,17 +16,17 @@ class ExternalProfileFactory extends Factory
 
     public function definition(): array
     {
-        $platform = fake()->randomElement([
+        $platform = $this->faker->randomElement([
             'github','linkedin','twitter','devto','medium'
         ]);
-        $handle = Str::lower(fake()->unique()->userName());
+        $handle = Str::lower($this->faker->unique()->userName());
         $url = match($platform) {
             'github' => "https://github.com/$handle",
             'linkedin' => "https://www.linkedin.com/in/$handle",
             'twitter' => "https://twitter.com/$handle",
             'devto' => "https://dev.to/$handle",
             'medium' => "https://medium.com/@$handle",
-            default => fake()->url(),
+            default => $this->faker->url(),
         };
         return [
             'user_id' => User::factory(),

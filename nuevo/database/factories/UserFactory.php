@@ -24,22 +24,22 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->name();
+        $name = $this->faker->name();
         $usernameBase = Str::slug(Str::lower($name));
-        $username = $usernameBase . '-' . fake()->unique()->numberBetween(100, 999);
+        $username = $usernameBase . '-' . $this->faker->unique()->numberBetween(100, 999);
         return [
             'name' => $name,
-            'display_name' => fake()->boolean(70) ? $name : null,
+            'display_name' => $this->faker->boolean(70) ? $name : null,
             'username' => $username,
-            'email' => fake()->unique()->safeEmail(),
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'bio' => fake()->boolean(80) ? Str::limit(fake()->sentence(12), 280) : null,
-            'about' => fake()->boolean(60) ? fake()->paragraphs(2, true) : null,
-            'location_city' => fake()->boolean(50) ? fake()->city() : null,
-            'location_country' => fake()->boolean(50) ? strtoupper(fake()->countryCode()) : null,
-            'availability' => fake()->boolean(50) ? ['freelance' => fake()->boolean(), 'mentoring' => fake()->boolean()] : null,
+            'bio' => $this->faker->boolean(80) ? Str::limit($this->faker->sentence(12), 280) : null,
+            'about' => $this->faker->boolean(60) ? $this->faker->paragraphs(2, true) : null,
+            'location_city' => $this->faker->boolean(50) ? $this->faker->city() : null,
+            'location_country' => $this->faker->boolean(50) ? strtoupper($this->faker->countryCode()) : null,
+            'availability' => $this->faker->boolean(50) ? ['freelance' => $this->faker->boolean(), 'mentoring' => $this->faker->boolean()] : null,
             'privacy' => ['bio' => 'public', 'location' => 'public'],
         ];
     }

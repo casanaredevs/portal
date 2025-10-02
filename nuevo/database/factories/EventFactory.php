@@ -13,15 +13,15 @@ class EventFactory extends Factory
 
     public function definition(): array
     {
-        $title = ucfirst(fake()->words(rand(2,4), true));
+        $title = ucfirst($this->faker->words(rand(2,4), true));
         $types = ['kata','taller','meetup'];
-        $start = fake()->dateTimeBetween('+1 day', '+40 days');
+        $start = $this->faker->dateTimeBetween('+1 day', '+40 days');
         $durationHours = [1,2,3,4][array_rand([1,2,3,4])];
         return [
             'title' => $title,
             'slug' => Str::slug($title).'-'.Str::random(4),
-            'summary' => fake()->sentence(10),
-            'description' => fake()->paragraphs(3, true),
+            'summary' => $this->faker->sentence(10),
+            'description' => $this->faker->paragraphs(3, true),
             'type' => $types[array_rand($types)],
             'start_at' => $start,
             'end_at' => (clone $start)->modify("+{$durationHours} hour"),
@@ -41,4 +41,3 @@ class EventFactory extends Factory
         return $this->state(fn() => ['status' => 'cancelled']);
     }
 }
-

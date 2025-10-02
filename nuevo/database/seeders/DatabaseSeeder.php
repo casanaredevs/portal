@@ -39,14 +39,17 @@ class DatabaseSeeder extends Seeder
         // Sembrar catálogo ampliado de tecnologías principales
         $this->call(TopTechnologiesSeeder::class);
 
-        // Sembrar eventos de ejemplo si no existen
-        if (Event::count() === 0) {
-            Event::factory()->count(6)->create();
-        }
+        // Evitar factories (faker) en producción si faker no está instalado (--no-dev)
+        if (!app()->environment('production')) {
+            // Sembrar eventos de ejemplo si no existen
+            if (Event::count() === 0) {
+                Event::factory()->count(6)->create();
+            }
 
-        // Marcar algunos usuarios como destacados si no hay ninguno
-        if (User::where('is_featured', true)->count() === 0) {
-            User::query()->inRandomOrder()->limit(5)->update(['is_featured' => true]);
+            // Marcar algunos usuarios como destacados si no hay ninguno
+            if (User::where('is_featured', true)->count() === 0) {
+                User::query()->inRandomOrder()->limit(5)->update(['is_featured' => true]);
+            }
         }
     }
 }

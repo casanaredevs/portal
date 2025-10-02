@@ -19,8 +19,8 @@ class SkillFactory extends Factory
         return [
             'user_id' => User::factory(),
             'technology_id' => Technology::factory(),
-            'level' => fake()->randomElement(['learning','intermediate','advanced']),
-            'years_experience' => fake()->numberBetween(0, 15),
+            'level' => $this->faker->randomElement(['learning','intermediate','advanced']),
+            'years_experience' => $this->faker->numberBetween(0, 15),
             'position' => 0,
             'visibility' => 'public',
         ];
@@ -31,4 +31,3 @@ class SkillFactory extends Factory
         return $this->state(fn() => ['position' => $position]);
     }
 }
-
