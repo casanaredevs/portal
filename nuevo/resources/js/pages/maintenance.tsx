@@ -12,6 +12,7 @@ interface MaintenancePayload {
 interface PageProps {
     maintenance: MaintenancePayload;
     name: string;
+    [key: string]: any; // allow additional shared inertia props
 }
 
 function formatRemaining(total: number) {

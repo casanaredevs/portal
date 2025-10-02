@@ -12,6 +12,7 @@ interface MaintenanceConfig {
 }
 interface PageProps {
     maintenance: MaintenanceConfig;
+    [key: string]: any; // allow shared inertia props
 }
 
 function isoLocal(date: Date) {
@@ -216,7 +217,7 @@ const MaintenanceAdminPage: React.FC = () => {
 
 (MaintenanceAdminPage as any).layout = (page: React.ReactNode) => {
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Dashboard', href: dashboard() },
+        { title: 'Dashboard', href: dashboard().url },
         { title: 'Administración', href: adminRoutes.index() },
         { title: 'Modo Mantenimiento', href: adminRoutes.maintenance() },
     ];

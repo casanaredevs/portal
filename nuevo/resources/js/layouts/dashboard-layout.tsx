@@ -3,6 +3,9 @@ import { type ReactNode } from 'react';
 
 interface DashboardLayoutProps {
     children: ReactNode;
+    // Optional breadcrumbs supplied by many pages; layout currently ignores them.
+    // Keeping here just to satisfy typing; AdminLayout handles breadcrumbs rendering.
+    breadcrumbs?: any; // BreadcrumbItem[] but kept loose to avoid extra import.
 }
 
 // DashboardLayout: layout reservado para el espacio autenticado.

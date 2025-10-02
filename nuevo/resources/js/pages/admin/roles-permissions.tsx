@@ -51,6 +51,7 @@ interface PageProps {
     };
     filters: { search: string; per_page: number };
     admins_count: number;
+    [key: string]: any; // allow extra inertia shared props
 }
 
 // Utilidades locales
@@ -889,9 +890,9 @@ const AdminRolesPermissionsPage: React.FC<PageProps> = (props) => {
     );
 };
 
-AdminRolesPermissionsPage.layout = (page: React.ReactNode) => {
+(AdminRolesPermissionsPage as any).layout = (page: React.ReactNode) => {
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Dashboard', href: dashboard() },
+        { title: 'Dashboard', href: dashboard().url },
         { title: 'Administración', href: adminRoutes.index() },
         { title: 'Roles & Permisos', href: adminPath('roles-permissions') }, // actualizado
     ];

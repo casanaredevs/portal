@@ -808,7 +808,8 @@ const AdminEventsPage: React.FC = () => {
     );
 };
 
-AdminEventsPage.layout = (page: React.ReactNode) => (
+// Replace direct property assignment with a cast to satisfy TS
+(AdminEventsPage as any).layout = (page: React.ReactNode) => (
     <AdminLayout>{page}</AdminLayout>
 );
 
