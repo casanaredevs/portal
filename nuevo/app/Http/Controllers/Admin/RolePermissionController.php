@@ -74,7 +74,7 @@ class RolePermissionController extends Controller
             'breadcrumbs' => [
                 [ 'title' => 'Dashboard', 'href' => route('dashboard') ],
                 [ 'title' => 'Administración', 'href' => route('admin.index') ],
-                [ 'title' => 'Roles & Permisos', 'href' => route('admin.roles-permissions.index') ],
+                [ 'title' => 'Roles y Permisos', 'href' => route('admin.roles-permissions.index') ],
             ],
         ];
 
