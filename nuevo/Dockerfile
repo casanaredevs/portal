@@ -40,11 +40,6 @@ RUN npm install
 RUN npm run build
 USER root
 
-# Optimizamos Laravel para producción
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
-
 # --- ETAPA 2: Imagen Final de Producción ---
 FROM php:8.3-fpm-alpine
 
