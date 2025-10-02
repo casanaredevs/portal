@@ -1,10 +1,16 @@
 import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from '@/components/ui/sidebar';
 import {
     Tooltip,
     TooltipContent,
@@ -13,6 +19,7 @@ import {
 } from '@/components/ui/tooltip';
 import { adminRoutes } from '@/lib/admin-routes';
 import { usePermissions } from '@/lib/permissions';
+import { Link, usePage } from '@inertiajs/react';
 import { KeyRound, Shield } from 'lucide-react';
 import React from 'react';
 
@@ -61,32 +68,30 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({
         if (l.anyPerms) return l.anyPerms.some((p) => can(p));
         return false;
     });
+    const { url } = usePage();
     if (items.length === 0) return null;
 
     if (variant === 'list') {
         return (
-            <div className={className}>
-                <div className="mb-2 text-xs font-semibold tracking-wide text-neutral-500 uppercase">
-                    {heading}
-                </div>
-                <div className="flex flex-col space-y-3">
+            <SidebarGroup className={className}>
+                <SidebarGroupLabel>{heading}</SidebarGroupLabel>
+                <SidebarMenu>
                     {items.map((item) => (
-                        <a
-                            key={item.title}
-                            href={item.href}
-                            className="flex items-center space-x-2 font-medium"
-                        >
-                            {item.icon && (
-                                <Icon
-                                    iconNode={item.icon}
-                                    className="h-5 w-5"
-                                />
-                            )}
-                            <span>{item.title}</span>
-                        </a>
+                        <SidebarMenuItem key={item.title}>
+                            <SidebarMenuButton
+                                asChild
+                                isActive={url.startsWith(item.href)}
+                                tooltip={{ children: item.title }}
+                            >
+                                <Link href={item.href} prefetch>
+                                    {item.icon && <item.icon />}
+                                    <span>{item.title}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
                     ))}
-                </div>
-            </div>
+                </SidebarMenu>
+            </SidebarGroup>
         );
     }
 
