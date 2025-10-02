@@ -22,6 +22,10 @@ enum Permission: string
     case UsersManage = 'users.manage';
 
     case ExternalProfilesSync = 'external-profiles.sync';
+
+    // Nuevos permisos modo mantenimiento
+    case MaintenanceManage = 'maintenance.manage';
+    case MaintenanceBypass = 'maintenance.bypass';
 }
 
 // Las clases RolePermissions y PermissionMetadata ahora viven en archivos separados:

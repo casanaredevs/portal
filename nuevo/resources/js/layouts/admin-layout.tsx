@@ -1,8 +1,10 @@
 import DashboardLayout from '@/layouts/dashboard-layout';
 import { type ReactNode } from 'react';
+import { type BreadcrumbItem } from '@/types';
 
 interface AdminLayoutProps {
     children: ReactNode;
+    breadcrumbs?: BreadcrumbItem[]; // aceptado para compatibilidad
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {

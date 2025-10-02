@@ -20,6 +20,9 @@ final class PermissionMetadata
         Permission::TechnologiesManage->value => ['label' => 'Gestionar tecnologías', 'category' => 'Tecnologías'],
         Permission::UsersManage->value => ['label' => 'Gestionar usuarios y roles', 'category' => 'Usuarios'],
         Permission::ExternalProfilesSync->value => ['label' => 'Sincronizar perfiles externos', 'category' => 'Perfiles Externos'],
+        // Nuevos permisos mantenimiento
+        Permission::MaintenanceManage->value => ['label' => 'Gestionar modo mantenimiento', 'category' => 'Sistema'],
+        Permission::MaintenanceBypass->value => ['label' => 'Navegar durante mantenimiento', 'category' => 'Sistema'],
     ];
 
     /** @return array<string,array{label:string,category:string,description?:string}> */
@@ -38,4 +41,3 @@ final class PermissionMetadata
         return self::META[$permission]['category'] ?? 'General';
     }
 }
-

@@ -1,4 +1,5 @@
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -47,6 +48,12 @@ const ADMIN_LINKS: AdminLink[] = [
             'events.delete',
             'events.publish',
         ],
+        icon: Shield,
+    },
+    {
+        title: 'Modo Mantenimiento',
+        href: adminRoutes.maintenance(),
+        perm: 'maintenance.manage',
         icon: Shield,
     },
 ];

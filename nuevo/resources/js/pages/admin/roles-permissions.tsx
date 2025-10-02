@@ -893,7 +893,7 @@ AdminRolesPermissionsPage.layout = (page: React.ReactNode) => {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Dashboard', href: dashboard() },
         { title: 'Administración', href: adminRoutes.index() },
-        { title: 'Roles y Permisos', href: adminPath('roles-permissions') },
+        { title: 'Roles & Permisos', href: adminPath('roles-permissions') }, // actualizado
     ];
     return <AdminLayout breadcrumbs={breadcrumbs}>{page}</AdminLayout>;
 };

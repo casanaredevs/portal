@@ -17,6 +17,8 @@ final class RolePermissions
             Permission::EventsPublish,
             Permission::SkillsModerate,
             Permission::ExternalProfilesSync,
+            // Permite navegar durante mantenimiento
+            Permission::MaintenanceBypass,
         ],
         'member' => [
             Permission::EventsRegister,
@@ -40,4 +42,3 @@ final class RolePermissions
         return array_map(fn(Permission $p) => $p->value, $def);
     }
 }
-

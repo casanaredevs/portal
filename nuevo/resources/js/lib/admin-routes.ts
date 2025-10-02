@@ -13,6 +13,7 @@ export const adminRoutes = {
     index: () => adminPath(),
     rolesPermissions: () => adminPath('roles-permissions'),
     events: () => adminPath('events'), // nueva ruta eventos admin
+    maintenance: () => adminPath('maintenance'), // nueva ruta mantenimiento
 };
 
 export type AdminRouteKey = keyof typeof adminRoutes;

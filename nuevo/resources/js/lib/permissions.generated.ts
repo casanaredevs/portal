@@ -13,6 +13,8 @@ export const PERMISSIONS = {
   TECHNOLOGIES_MANAGE: 'technologies.manage',
   USERS_MANAGE: 'users.manage',
   EXTERNAL_PROFILES_SYNC: 'external-profiles.sync',
+  MAINTENANCE_MANAGE: 'maintenance.manage',
+  MAINTENANCE_BYPASS: 'maintenance.bypass',
 } as const;
 
 export type PermissionString = typeof PERMISSIONS[keyof typeof PERMISSIONS];
@@ -29,5 +31,7 @@ export const PERMISSION_META: Record<PermissionString,{label:string;category:str
   'technologies.manage': { label: 'Gestionar tecnologías', category: 'Tecnologías' },
   'users.manage': { label: 'Gestionar usuarios y roles', category: 'Usuarios' },
   'external-profiles.sync': { label: 'Sincronizar perfiles externos', category: 'Perfiles Externos' },
+  'maintenance.manage': { label: 'Gestionar modo mantenimiento', category: 'Sistema' },
+  'maintenance.bypass': { label: 'Navegar durante mantenimiento', category: 'Sistema' },
 };
 

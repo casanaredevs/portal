@@ -9,6 +9,7 @@ use App\Http\Controllers\PublicMetricsController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TechnologyController;
 use App\Http\Controllers\Admin\EventAdminController; // añadido
+use App\Http\Controllers\Admin\MaintenanceAdminController; // nuevo
 use App\Models\Event;
 use App\Models\Technology;
 use App\Models\User;
@@ -159,6 +160,15 @@ Route::middleware(['auth','verified','permission:events.create|events.edit|event
         Route::post('/', [EventAdminController::class,'store'])->name('store');
         Route::patch('/{event}', [EventAdminController::class,'update'])->name('update');
         Route::delete('/{event}', [EventAdminController::class,'destroy'])->name('destroy');
+    });
+
+// Grupo administración modo mantenimiento
+Route::middleware(['auth','verified','permission:maintenance.manage'])
+    ->prefix('dashboard/admin/maintenance')
+    ->name('admin.maintenance.')
+    ->group(function() {
+        Route::get('/', [MaintenanceAdminController::class,'index'])->name('index');
+        Route::post('/', [MaintenanceAdminController::class,'store'])->name('store');
     });
 
 require __DIR__.'/settings.php';
