@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +24,16 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->isProduction()) {
             URL::forceScheme('https');
         }
+
+        Inertia::share([
+            'flash' => function () {
+                return [
+                    'newsletter' => [
+                        'status' => session('newsletter.status'),
+                        'message' => session('newsletter.message'),
+                    ],
+                ];
+            },
+        ]);
     }
 }

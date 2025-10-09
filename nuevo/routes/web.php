@@ -171,5 +171,9 @@ Route::middleware(['auth','verified','permission:maintenance.manage'])
         Route::post('/', [MaintenanceAdminController::class,'store'])->name('store');
     });
 
+// Rutas de newsletter
+Route::post('/newsletter-subscriptions', [\App\Http\Controllers\NewsletterSubscriptionController::class,'store'])->name('newsletter.store');
+Route::get('/newsletter/confirm/{token}', [\App\Http\Controllers\NewsletterSubscriptionController::class,'confirm'])->name('newsletter.confirm');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
