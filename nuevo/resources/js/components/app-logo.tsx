@@ -1,11 +1,45 @@
 import { useState } from 'react';
 import AppLogoIcon from './app-logo-icon';
+import { useSidebar } from './ui/sidebar';
 
 export default function AppLogo() {
     type Phase = 'logo' | 'icon-file' | 'icon-component' | 'text';
     const [phase, setPhase] = useState<Phase>('logo');
+    const { state } = useSidebar();
 
     const brandName = 'Casanare Devs';
+
+    // Nuevo: cuando el sidebar está colapsado mostramos solo el ícono
+    if (state === 'collapsed') {
+        if (phase !== 'icon-component' && phase !== 'text') {
+            return (
+                <div className="flex items-center justify-center">
+                    <img
+                        src="/icon.svg"
+                        alt={brandName}
+                        className="size-8 object-contain"
+                        onError={() =>
+                            setPhase(
+                                typeof AppLogoIcon === 'function'
+                                    ? 'icon-component'
+                                    : 'text',
+                            )
+                        }
+                    />
+                    <span className="sr-only">{brandName}</span>
+                </div>
+            );
+        }
+        if (phase === 'icon-component' && typeof AppLogoIcon === 'function') {
+            return (
+                <div className="flex items-center justify-center">
+                    <AppLogoIcon className="size-6 fill-current" />
+                    <span className="sr-only">{brandName}</span>
+                </div>
+            );
+        }
+        return <span className="sr-only">{brandName}</span>;
+    }
 
     if (phase === 'logo') {
         return (
