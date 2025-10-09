@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import AppLogoIcon from './app-logo-icon';
-import { useSidebar } from './ui/sidebar';
+import { useOptionalSidebar } from './ui/sidebar';
 
 export default function AppLogo() {
     type Phase = 'logo' | 'icon-file' | 'icon-component' | 'text';
     const [phase, setPhase] = useState<Phase>('logo');
-    const { state } = useSidebar();
+    const sidebar = useOptionalSidebar();
+    const sidebarState = sidebar?.state; // undefined si no hay provider
 
     const brandName = 'Casanare Devs';
 
-    // Nuevo: cuando el sidebar está colapsado mostramos solo el ícono
-    if (state === 'collapsed') {
+    if (sidebarState === 'collapsed') {
         if (phase !== 'icon-component' && phase !== 'text') {
             return (
                 <div className="flex items-center justify-center">

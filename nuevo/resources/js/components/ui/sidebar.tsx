@@ -51,6 +51,11 @@ function useSidebar() {
   return context
 }
 
+// Nuevo: hook opcional que devuelve null si no hay provider
+function useOptionalSidebar() {
+  return React.useContext(SidebarContext)
+}
+
 function SidebarProvider({
   defaultOpen = true,
   open: openProp,
@@ -734,4 +739,5 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
+  useOptionalSidebar,
 }
