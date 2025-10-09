@@ -41,6 +41,19 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
         return () => window.removeEventListener('hashchange', handler);
     }, []);
 
+    // Hacer scroll suave al ancla cuando estemos en home y exista hash
+    useEffect(() => {
+        if (page.url === '/' && hash.startsWith('#')) {
+            const el = document.getElementById(hash.substring(1));
+            if (el) {
+                // Usar requestAnimationFrame para asegurar que el layout se haya pintado
+                requestAnimationFrame(() => {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
+        }
+    }, [page.url, hash]);
+
     return (
         <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
             <a
@@ -63,10 +76,15 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                     >
                         {publicNavItems.map((item) => {
                             const active = isItemActive(item, page.url, hash);
+                            const resolvedHref = item.href.startsWith('#')
+                                ? page.url === '/'
+                                    ? item.href
+                                    : `/${item.href}`
+                                : item.href;
                             return (
                                 <Link
                                     key={item.label}
-                                    href={item.href}
+                                    href={resolvedHref}
                                     aria-current={active ? 'page' : undefined}
                                     className={
                                         `group relative inline-flex items-center rounded-md px-3 py-2 text-sm font-medium transition outline-none ` +
@@ -156,10 +174,15 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                     page.url,
                                     hash,
                                 );
+                                const resolvedHref = item.href.startsWith('#')
+                                    ? page.url === '/'
+                                        ? item.href
+                                        : `/${item.href}`
+                                    : item.href;
                                 return (
                                     <Link
                                         key={item.label}
-                                        href={item.href}
+                                        href={resolvedHref}
                                         onClick={() => setMenuOpen(false)}
                                         aria-current={
                                             active ? 'page' : undefined
