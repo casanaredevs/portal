@@ -2,7 +2,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreNewsletterSubscriptionRequest;
+use App\Mail\NewsletterConfirmMail;
 use App\Models\NewsletterSubscription;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class NewsletterSubscriptionController extends Controller
@@ -15,24 +18,37 @@ class NewsletterSubscriptionController extends Controller
 
         $existing = NewsletterSubscription::where('email', $email)->first();
         if ($existing) {
+            // Si estaba unsubscribed lo reactivamos y reenviamos correo
             if ($existing->status === 'unsubscribed') {
                 $existing->status = 'pending';
                 $existing->token = Str::random(40);
                 $existing->consented_at = now();
                 $existing->consent_ip = $ip;
                 $existing->save();
+                $this->sendConfirmation($existing);
                 return redirect($target)->with([
                     'newsletter.status' => 'pending',
-                    'newsletter.message' => 'Suscripción reactivada. Revisa tu correo cuando activemos la confirmación.',
+                    'newsletter.message' => 'Te enviamos un correo para confirmar tu suscripción (reactivada). Revisa tu bandeja.' ,
+                ]);
+            }
+            // pending o confirmed
+            if ($existing->status === 'pending') {
+                // re‑enviar siempre un nuevo token para seguridad
+                $existing->token = Str::random(40);
+                $existing->save();
+                $this->sendConfirmation($existing);
+                return redirect($target)->with([
+                    'newsletter.status' => 'pending',
+                    'newsletter.message' => 'Te reenviamos el correo de confirmación. Revisa tu bandeja (y spam).',
                 ]);
             }
             return redirect($target)->with([
-                'newsletter.status' => $existing->status,
-                'newsletter.message' => 'Si el correo es válido ya está registrado o en proceso.',
+                'newsletter.status' => 'confirmed',
+                'newsletter.message' => 'Ya habías confirmado tu suscripción. ¡Gracias!',
             ]);
         }
 
-        NewsletterSubscription::create([
+        $subscription = NewsletterSubscription::create([
             'email' => $email,
             'status' => 'pending',
             'token' => Str::random(40),
@@ -40,9 +56,11 @@ class NewsletterSubscriptionController extends Controller
             'consent_ip' => $ip,
         ]);
 
+        $this->sendConfirmation($subscription);
+
         return redirect($target)->with([
             'newsletter.status' => 'pending',
-            'newsletter.message' => 'Hemos recibido tu solicitud. Pronto activaremos confirmación para validar tu correo.',
+            'newsletter.message' => 'Hemos enviado un correo con enlace de confirmación. Revisa tu bandeja.',
         ]);
     }
 
@@ -65,5 +83,43 @@ class NewsletterSubscriptionController extends Controller
             'newsletter.status' => 'confirmed',
             'newsletter.message' => '¡Suscripción confirmada! Gracias por unirte.',
         ]);
+    }
+
+    protected function sendConfirmation(NewsletterSubscription $subscription): void
+    {
+        try {
+            if (!config('mail.default')) {
+                return; // sin mailer configurado
+            }
+
+            $mailable = new NewsletterConfirmMail($subscription);
+
+            // Determinar si podemos usar queue de forma segura
+            $queueDriver = config('queue.default');
+            $useQueue = $queueDriver !== 'sync';
+
+            if ($useQueue) {
+                // Verificar existencia de tabla jobs solo si database driver
+                if ($queueDriver === 'database') {
+                    try {
+                        \Illuminate\Support\Facades\DB::table(config('queue.connections.database.table', 'jobs'))->limit(1)->get();
+                    } catch (\Throwable $e) {
+                        $useQueue = false; // tabla no existe aún
+                        Log::notice('Fallback a envío sync newsletter: tabla jobs no disponible', ['error' => $e->getMessage()]);
+                    }
+                }
+            }
+
+            if ($useQueue) {
+                Mail::to($subscription->email)->queue($mailable);
+            } else {
+                Mail::to($subscription->email)->send($mailable);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo enviar correo de confirmación newsletter', [
+                'id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }
