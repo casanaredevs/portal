@@ -188,8 +188,22 @@ Don't:
 - Ignorar `ADMIN-STYLE.md` en cambios de UI.
 
 ---
-## 13. Comandos Útiles (Windows cmd)
-Instalación inicial:
+## 13. Comandos Útiles (Git Bash primero, fallback Windows cmd)
+
+Política de ejecución:
+- Intenta primero ejecutar comandos en Git Bash / entornos tipo Unix (bash).
+- Si el comando falla o aparece un mensaje tipo "command not found" o "no se reconoce como un comando interno o externo", vuelve a intentarlo usando su equivalente para Windows cmd.
+
+13.1 Instalación inicial (Git Bash):
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+```
+
+13.2 Instalación inicial (Windows cmd):
 ```
 composer install
 npm install
@@ -197,6 +211,7 @@ copy .env.example .env
 php artisan key:generate
 php artisan migrate
 ```
+
 Desarrollo (frontend + backend + cola):
 ```
 composer run dev
