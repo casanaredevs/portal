@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" class="w-32 h-8">
-  <rect width="200" height="60" fill="#1e40af" rx="8"/>
-  <text x="100" y="35" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">
-    Casanare Devs
-  </text>
-  <circle cx="25" cy="30" r="8" fill="#10b981"/>
-  <circle cx="175" cy="30" r="8" fill="#f59e0b"/>
-</svg>
-
